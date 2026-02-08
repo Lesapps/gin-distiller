@@ -1,0 +1,836 @@
+// ============================================================
+// APP.JS - Gin Distiller Pro
+// Navigation, calculs, suivi, theme, swipe, PWA
+// ============================================================
+
+(function() {
+  'use strict';
+
+  // ========== THEME ==========
+  const themeToggle = document.getElementById('themeToggle');
+  const html = document.documentElement;
+
+  function initTheme() {
+    const saved = localStorage.getItem('gin-theme') || 'light';
+    html.setAttribute('data-theme', saved);
+    updateThemeColor(saved);
+  }
+
+  function toggleTheme() {
+    const current = html.getAttribute('data-theme');
+    const next = current === 'light' ? 'dark' : 'light';
+    html.setAttribute('data-theme', next);
+    localStorage.setItem('gin-theme', next);
+    updateThemeColor(next);
+    vibrate(10);
+  }
+
+  function updateThemeColor(theme) {
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.content = theme === 'dark' ? '#0f3460' : '#2c5f8a';
+  }
+
+  themeToggle.addEventListener('click', toggleTheme);
+  initTheme();
+
+  // ========== LEGAL MODAL ==========
+  const legalModal = document.getElementById('legalModal');
+  const legalAccept = document.getElementById('legalAccept');
+
+  function initLegal() {
+    if (!localStorage.getItem('gin-legal-accepted')) {
+      legalModal.classList.add('active');
+    }
+  }
+
+  legalAccept.addEventListener('click', function() {
+    localStorage.setItem('gin-legal-accepted', '1');
+    legalModal.classList.remove('active');
+    vibrate(15);
+  });
+
+  initLegal();
+
+  // ========== NAVIGATION ==========
+  const pages = document.querySelectorAll('.page');
+  const navBtns = document.querySelectorAll('.nav-btn');
+  let currentPage = 'accueil';
+
+  function navigateTo(pageName, pushState) {
+    if (pushState === undefined) pushState = true;
+    pages.forEach(function(p) { p.classList.remove('active'); });
+    navBtns.forEach(function(b) { b.classList.remove('active'); });
+
+    var page = document.getElementById('page-' + pageName);
+    if (page) {
+      page.classList.add('active');
+      window.scrollTo(0, 0);
+    }
+
+    var navBtn = document.querySelector('.nav-btn[data-page="' + pageName + '"]');
+    if (navBtn) navBtn.classList.add('active');
+
+    currentPage = pageName;
+
+    if (pushState) {
+      var url = new URL(window.location);
+      url.searchParams.set('page', pageName);
+      history.pushState({ page: pageName }, '', url);
+    }
+
+    vibrate(5);
+  }
+
+  navBtns.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      navigateTo(btn.dataset.page);
+    });
+  });
+
+  // Quick links
+  document.querySelectorAll('.quick-link').forEach(function(link) {
+    link.addEventListener('click', function() {
+      var nav = link.dataset.nav;
+      var tab = link.dataset.tab;
+      navigateTo(nav);
+      if (tab !== undefined) {
+        var tabGroup = nav === 'guide' ? 'guideTabs' : nav === 'calculs' ? 'calculsTabs' : 'refTabs';
+        switchTab(tabGroup, parseInt(tab));
+      }
+    });
+  });
+
+  // History API
+  window.addEventListener('popstate', function(e) {
+    if (e.state && e.state.page) {
+      navigateTo(e.state.page, false);
+    } else {
+      var params = new URLSearchParams(window.location.search);
+      navigateTo(params.get('page') || 'accueil', false);
+    }
+  });
+
+  // Init from URL
+  (function() {
+    var params = new URLSearchParams(window.location.search);
+    var p = params.get('page');
+    if (p && document.getElementById('page-' + p)) {
+      navigateTo(p, false);
+    }
+  })();
+
+  // ========== TABS ==========
+  function switchTab(tabGroupId, index) {
+    var tabGroup = document.getElementById(tabGroupId);
+    if (!tabGroup) return;
+
+    var tabs = tabGroup.querySelectorAll('.tab');
+    tabs.forEach(function(t) { t.classList.remove('active'); });
+    if (tabs[index]) tabs[index].classList.add('active');
+
+    // Find corresponding container
+    var containerId;
+    if (tabGroupId === 'guideTabs') containerId = 'guideSwipe';
+    else if (tabGroupId === 'calculsTabs') containerId = 'calculsContainer';
+    else if (tabGroupId === 'refTabs') containerId = 'refContainer';
+
+    if (containerId) {
+      var container = document.getElementById(containerId);
+      var panels = container.querySelectorAll('.swipe-panel, .subtab-panel');
+      panels.forEach(function(p) { p.classList.remove('active'); });
+      var target = container.querySelector('[data-panel="' + index + '"]');
+      if (target) target.classList.add('active');
+    }
+  }
+
+  // Tab click handlers
+  ['guideTabs', 'calculsTabs', 'refTabs'].forEach(function(groupId) {
+    var group = document.getElementById(groupId);
+    if (!group) return;
+    group.querySelectorAll('.tab').forEach(function(tab) {
+      tab.addEventListener('click', function() {
+        switchTab(groupId, parseInt(tab.dataset.tab));
+        vibrate(5);
+      });
+    });
+  });
+
+  // ========== SWIPE (Guide) ==========
+  (function() {
+    var container = document.getElementById('guideSwipe');
+    if (!container) return;
+
+    var startX = 0, startY = 0, distX = 0, distY = 0;
+    var totalPanels = container.querySelectorAll('.swipe-panel').length;
+
+    function getCurrentIndex() {
+      var active = container.querySelector('.swipe-panel.active');
+      return active ? parseInt(active.dataset.panel) : 0;
+    }
+
+    container.addEventListener('touchstart', function(e) {
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+    }, { passive: true });
+
+    container.addEventListener('touchend', function(e) {
+      distX = e.changedTouches[0].clientX - startX;
+      distY = e.changedTouches[0].clientY - startY;
+
+      // Only swipe if horizontal movement > vertical and > 50px threshold
+      if (Math.abs(distX) > 50 && Math.abs(distX) > Math.abs(distY) * 1.5) {
+        var idx = getCurrentIndex();
+        if (distX < 0 && idx < totalPanels - 1) {
+          switchTab('guideTabs', idx + 1);
+        } else if (distX > 0 && idx > 0) {
+          switchTab('guideTabs', idx - 1);
+        }
+      }
+    }, { passive: true });
+  })();
+
+  // ========== CALCULATEUR MATIERE PREMIERE ==========
+  var calcWineVol = document.getElementById('calcWineVol');
+  var calcWineABV = document.getElementById('calcWineABV');
+  var calcMatiereResults = document.getElementById('calcMatiereResults');
+
+  function updateCalcMatiere() {
+    var vol = parseFloat(calcWineVol.value) || 0;
+    var abv = parseFloat(calcWineABV.value) || 0;
+
+    if (vol <= 0 || abv <= 0 || abv > 100) {
+      calcMatiereResults.innerHTML = '<div class="box box-warning">Entrez des valeurs valides.</div>';
+      return;
+    }
+
+    var ethanol0 = vol * abv / 100;
+
+    // D1: 88% recovery
+    var ethD1 = ethanol0 * DATA.calcCoefficients.d1Recovery;
+    var abvD1 = 35;
+    var volD1 = ethD1 / (abvD1 / 100);
+
+    // D2: 60% of D1 ethanol -> coeur
+    var ethD2 = ethD1 * DATA.calcCoefficients.d2Recovery;
+    var abvD2 = 73;
+    var volD2 = ethD2 / (abvD2 / 100);
+
+    // D3: 84% of D2 ethanol -> coeur
+    var ethD3 = ethD2 * DATA.calcCoefficients.d3Recovery;
+    var abvD3 = 80;
+    var volD3 = ethD3 / (abvD3 / 100);
+
+    // Dilution to 40%
+    var ethFinal = ethD3;
+    var abvFinal = 40;
+    var volFinal = ethFinal / (abvFinal / 100);
+
+    var warn = '';
+    if (ethFinal > ethanol0) {
+      warn = '<div class="box box-danger">Erreur : ethanol de sortie > ethanol d\'entree. Impossible.</div>';
+    }
+
+    calcMatiereResults.innerHTML = warn +
+      buildCascadeStep('Vin', r(vol) + ' mL @ ' + r(abv) + '%', r(ethanol0) + ' mL ethanol', false) +
+      '<div class="cascade-arrow">&darr; D1 (recup. 88%)</div>' +
+      buildCascadeStep('Bas-vin D1', '~' + r(volD1) + ' mL @ ~' + abvD1 + '%', '~' + r(ethD1) + ' mL ethanol', false) +
+      '<div class="cascade-arrow">&darr; D2 coeur (recup. 60%)</div>' +
+      buildCascadeStep('Coeur D2', '~' + r(volD2) + ' mL @ ~' + abvD2 + '%', '~' + r(ethD2) + ' mL ethanol', false) +
+      '<div class="cascade-arrow">&darr; D3 coeur (recup. 84%)</div>' +
+      buildCascadeStep('Coeur D3', '~' + r(volD3) + ' mL @ ~' + abvD3 + '%', '~' + r(ethD3) + ' mL ethanol', false) +
+      '<div class="cascade-arrow">&darr; Dilution a 40%</div>' +
+      buildCascadeStep('Gin Final', '~' + r(volFinal) + ' mL @ ' + abvFinal + '%', '~' + r(ethFinal) + ' mL ethanol (' + r(ethFinal / ethanol0 * 100) + '%)', true);
+  }
+
+  function buildCascadeStep(label, detail, ethanol, isFinal) {
+    return '<div class="cascade-step' + (isFinal ? ' final' : '') + '">' +
+      '<div><div class="cascade-label">' + label + '</div><div class="cascade-detail">' + detail + '</div></div>' +
+      '<div class="cascade-values"><div class="cascade-ethanol">' + ethanol + '</div></div>' +
+      '</div>';
+  }
+
+  function r(n) { return Math.round(n); }
+
+  if (calcWineVol) {
+    calcWineVol.addEventListener('input', updateCalcMatiere);
+    calcWineABV.addEventListener('input', updateCalcMatiere);
+    updateCalcMatiere();
+  }
+
+  // ========== CALCULATEUR BOTANIQUES ==========
+  var calcBotVol = document.getElementById('calcBotVol');
+  var calcBotResults = document.getElementById('calcBotResults');
+
+  function updateCalcBot() {
+    var vol = parseFloat(calcBotVol.value) || 0;
+    if (vol <= 0) return;
+
+    var tbody = calcBotResults.querySelector('tbody');
+    var html = '';
+    var totalG = 0;
+
+    DATA.botanicals.forEach(function(b) {
+      var qty = b.gPerL * (vol / 1000);
+      totalG += qty;
+      html += '<tr><td>' + b.nom + ' (' + b.detail + ')</td><td>' + b.gPerL + '</td><td><strong>' + qty.toFixed(1) + ' g</strong></td><td>' + b.role + '</td></tr>';
+    });
+
+    html += '<tr class="row-total"><td><strong>TOTAL</strong></td><td><strong>~' + DATA.botanicalsTotal.toFixed(0) + '</strong></td><td><strong>' + totalG.toFixed(1) + ' g</strong></td><td>Equilibre London Dry</td></tr>';
+
+    tbody.innerHTML = html;
+  }
+
+  if (calcBotVol) {
+    calcBotVol.addEventListener('input', updateCalcBot);
+    updateCalcBot();
+  }
+
+  // ========== CALCULATEUR DILUTION ==========
+  var calcDilVol = document.getElementById('calcDilVol');
+  var calcDilABV = document.getElementById('calcDilABV');
+  var calcDilTarget = document.getElementById('calcDilTarget');
+  var calcDilResults = document.getElementById('calcDilResults');
+
+  function updateCalcDil() {
+    var vol = parseFloat(calcDilVol.value) || 0;
+    var abv = parseFloat(calcDilABV.value) || 0;
+    var target = parseFloat(calcDilTarget.value) || 0;
+
+    if (vol <= 0 || abv <= 0 || target <= 0 || abv > 100 || target > 100) {
+      calcDilResults.innerHTML = '<div class="box box-warning">Entrez des valeurs valides.</div>';
+      return;
+    }
+
+    if (target >= abv) {
+      calcDilResults.innerHTML = '<div class="box box-danger">L\'ABV cible doit etre inferieur a l\'ABV actuel.</div>';
+      return;
+    }
+
+    var eau = vol * (abv / target - 1);
+    var volFinalTheorique = vol + eau;
+    var contraction = DATA.dilution.contraction / 100;
+    var volFinalReel = volFinalTheorique * (1 - contraction);
+    var ethanolPur = vol * abv / 100;
+
+    calcDilResults.innerHTML = '<div class="result-card">' +
+      '<div class="result-row"><span class="result-label">Eau a ajouter</span><span class="result-value highlight">' + r(eau) + ' mL</span></div>' +
+      '<div class="result-row"><span class="result-label">Volume final theorique</span><span class="result-value">~' + r(volFinalTheorique) + ' mL</span></div>' +
+      '<div class="result-row"><span class="result-label">Volume reel (~' + DATA.dilution.contraction + '% contraction)</span><span class="result-value">~' + r(volFinalReel) + ' mL</span></div>' +
+      '<div class="result-row"><span class="result-label">Ethanol pur conserve</span><span class="result-value">' + r(ethanolPur) + ' mL</span></div>' +
+      '</div>';
+  }
+
+  if (calcDilVol) {
+    calcDilVol.addEventListener('input', updateCalcDil);
+    calcDilABV.addEventListener('input', updateCalcDil);
+    calcDilTarget.addEventListener('input', updateCalcDil);
+    updateCalcDil();
+  }
+
+  // Dilution presets
+  document.querySelectorAll('[data-preset]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var preset = btn.dataset.preset;
+      if (preset === 'd3') {
+        calcDilVol.value = 135;
+        calcDilABV.value = 80;
+        calcDilTarget.value = 40;
+      } else if (preset === 'preD3') {
+        calcDilVol.value = 175;
+        calcDilABV.value = 73;
+        calcDilTarget.value = 43;
+      }
+      updateCalcDil();
+      vibrate(10);
+    });
+  });
+
+  // ========== TROUBLESHOOTING ==========
+  var troubleList = document.getElementById('troubleList');
+  var troubleSearch = document.getElementById('troubleSearch');
+
+  function renderTroubleshooting() {
+    if (!troubleList) return;
+    var html = '';
+    DATA.troubleshooting.forEach(function(item, i) {
+      html += '<div class="trouble-item" data-trouble="' + i + '">' +
+        '<button class="trouble-header"><span>' + item.probleme + '</span><span class="accordion-icon">+</span></button>' +
+        '<div class="trouble-body"><div class="trouble-content">' +
+        '<p class="trouble-cause"><strong>Cause :</strong> ' + item.cause + '</p>' +
+        '<p class="trouble-solution"><strong>Solution :</strong> ' + item.solution + '</p>' +
+        '</div></div></div>';
+    });
+    troubleList.innerHTML = html;
+
+    // Toggle
+    troubleList.querySelectorAll('.trouble-header').forEach(function(header) {
+      header.addEventListener('click', function() {
+        var item = header.closest('.trouble-item');
+        item.classList.toggle('open');
+        var icon = header.querySelector('.accordion-icon');
+        icon.textContent = item.classList.contains('open') ? '-' : '+';
+        vibrate(5);
+      });
+    });
+  }
+
+  renderTroubleshooting();
+
+  if (troubleSearch) {
+    troubleSearch.addEventListener('input', function() {
+      var query = troubleSearch.value.toLowerCase().trim();
+      var items = troubleList.querySelectorAll('.trouble-item');
+      items.forEach(function(item) {
+        var idx = parseInt(item.dataset.trouble);
+        var data = DATA.troubleshooting[idx];
+        var text = (data.probleme + ' ' + data.cause + ' ' + data.solution).toLowerCase();
+        if (!query || text.indexOf(query) !== -1) {
+          item.classList.remove('hidden-search');
+        } else {
+          item.classList.add('hidden-search');
+        }
+      });
+    });
+  }
+
+  // ========== ACCORDION (generic) ==========
+  document.querySelectorAll('.accordion-header').forEach(function(header) {
+    header.addEventListener('click', function() {
+      var acc = header.closest('.accordion');
+      acc.classList.toggle('open');
+      var icon = header.querySelector('.accordion-icon');
+      icon.textContent = acc.classList.contains('open') ? '-' : '+';
+      vibrate(5);
+    });
+  });
+
+  // ========== SUIVI DE PRODUCTION ==========
+  var STORAGE_KEY = 'gin-sessions';
+
+  function getSessions() {
+    try {
+      return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function saveSessions(sessions) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(sessions));
+  }
+
+  function getSession(id) {
+    return getSessions().find(function(s) { return s.id === id; });
+  }
+
+  function updateSession(id, updates) {
+    var sessions = getSessions();
+    var idx = sessions.findIndex(function(s) { return s.id === id; });
+    if (idx !== -1) {
+      Object.assign(sessions[idx], updates);
+      saveSessions(sessions);
+    }
+  }
+
+  function deleteSession(id) {
+    var sessions = getSessions().filter(function(s) { return s.id !== id; });
+    saveSessions(sessions);
+  }
+
+  // --- Views ---
+  var suiviList = document.getElementById('suiviList');
+  var suiviNew = document.getElementById('suiviNew');
+  var suiviDetail = document.getElementById('suiviDetail');
+  var currentSessionId = null;
+
+  function showView(view) {
+    suiviList.style.display = view === 'list' ? '' : 'none';
+    suiviNew.style.display = view === 'new' ? '' : 'none';
+    suiviDetail.style.display = view === 'detail' ? '' : 'none';
+  }
+
+  // --- Session List ---
+  function renderSessionList() {
+    var sessions = getSessions();
+    var listEl = document.getElementById('sessionList');
+    var statsEl = document.getElementById('sessionStats');
+    var statsContent = document.getElementById('statsContent');
+
+    if (sessions.length === 0) {
+      listEl.innerHTML = '<p class="empty-state">Aucune session. Creez votre premiere session de production.</p>';
+      statsEl.style.display = 'none';
+      return;
+    }
+
+    // Stats
+    var completed = sessions.filter(function(s) { return s.ficheRendement; });
+    if (completed.length > 0) {
+      var rendements = completed.map(function(s) { return parseFloat(s.ficheRendement) || 0; });
+      var avg = rendements.reduce(function(a, b) { return a + b; }, 0) / rendements.length;
+      var best = Math.max.apply(null, rendements);
+      statsEl.style.display = '';
+      statsContent.innerHTML =
+        '<div class="stat-card"><div class="stat-value">' + sessions.length + '</div><div class="stat-label">Sessions</div></div>' +
+        '<div class="stat-card"><div class="stat-value">' + avg.toFixed(0) + '%</div><div class="stat-label">Rendement moy.</div></div>' +
+        '<div class="stat-card"><div class="stat-value">' + best.toFixed(0) + '%</div><div class="stat-label">Meilleur</div></div>';
+    } else {
+      statsEl.style.display = 'none';
+    }
+
+    // Cards
+    var html = '';
+    sessions.sort(function(a, b) { return new Date(b.date) - new Date(a.date); });
+    sessions.forEach(function(s) {
+      var totalChecked = countChecked(s);
+      var pct = Math.round(totalChecked / 39 * 100);
+      var badge = pct >= 100 ? '<span class="badge badge-done">Termine</span>' : '<span class="badge badge-progress">' + pct + '%</span>';
+      var rendement = s.ficheRendement ? s.ficheRendement + '%' : '--';
+      html += '<div class="session-card" data-session="' + s.id + '">' +
+        '<div class="session-card-header"><span class="session-card-name">' + escapeHtml(s.name) + '</span>' + badge + '</div>' +
+        '<div class="session-card-info"><span>' + formatDate(s.date) + '</span><span>Rendement: ' + rendement + '</span></div>' +
+        '</div>';
+    });
+    listEl.innerHTML = html;
+
+    // Click to detail
+    listEl.querySelectorAll('.session-card').forEach(function(card) {
+      card.addEventListener('click', function() {
+        loadSession(card.dataset.session);
+        vibrate(10);
+      });
+    });
+  }
+
+  function countChecked(session) {
+    var total = 0;
+    if (session.checks) {
+      Object.keys(session.checks).forEach(function(k) {
+        Object.keys(session.checks[k]).forEach(function(i) {
+          if (session.checks[k][i]) total++;
+        });
+      });
+    }
+    return total;
+  }
+
+  // --- Create session ---
+  document.getElementById('newSessionBtn').addEventListener('click', function() {
+    document.getElementById('sessionDate').value = new Date().toISOString().split('T')[0];
+    showView('new');
+    vibrate(10);
+  });
+
+  document.getElementById('cancelSessionBtn').addEventListener('click', function() {
+    showView('list');
+  });
+
+  document.getElementById('createSessionBtn').addEventListener('click', function() {
+    var name = document.getElementById('sessionName').value.trim();
+    if (!name) { alert('Entrez un nom pour le lot.'); return; }
+
+    var session = {
+      id: Date.now().toString(),
+      name: name,
+      date: document.getElementById('sessionDate').value || new Date().toISOString().split('T')[0],
+      wineVol: parseFloat(document.getElementById('sessionWineVol').value) || 2000,
+      wineABV: parseFloat(document.getElementById('sessionWineABV').value) || 12,
+      wineType: document.getElementById('sessionWineType').value || 'Blanc sec',
+      checks: {},
+      fiche: {}
+    };
+
+    var sessions = getSessions();
+    sessions.push(session);
+    saveSessions(sessions);
+
+    loadSession(session.id);
+    vibrate(15);
+  });
+
+  // --- Load session detail ---
+  function loadSession(id) {
+    currentSessionId = id;
+    var session = getSession(id);
+    if (!session) return;
+
+    document.getElementById('sessionDetailTitle').textContent = session.name;
+    showView('detail');
+
+    renderChecklists(session);
+    renderFiche(session);
+    updateProgress(session);
+  }
+
+  document.getElementById('backToListBtn').addEventListener('click', function() {
+    currentSessionId = null;
+    showView('list');
+    renderSessionList();
+    vibrate(5);
+  });
+
+  // --- Delete session ---
+  document.getElementById('deleteSessionBtn').addEventListener('click', function() {
+    if (confirm('Supprimer cette session ? Cette action est irreversible.')) {
+      deleteSession(currentSessionId);
+      currentSessionId = null;
+      showView('list');
+      renderSessionList();
+      vibrate(15);
+    }
+  });
+
+  // --- Checklists ---
+  var checklistsContainer = document.getElementById('checklistsContainer');
+
+  function renderChecklists(session) {
+    var html = '';
+    var sections = ['avant', 'd1', 'd2', 'd3', 'dilution'];
+
+    sections.forEach(function(key) {
+      var cl = DATA.checklists[key];
+      var checked = (session.checks && session.checks[key]) || {};
+      var checkedCount = 0;
+      cl.items.forEach(function(_, i) { if (checked[i]) checkedCount++; });
+
+      html += '<section class="section"><div class="accordion' + (checkedCount > 0 && checkedCount < cl.items.length ? ' open' : '') + '" data-accordion="cl-' + key + '">' +
+        '<button class="accordion-header"><span>' + cl.titre + ' (' + checkedCount + '/' + cl.items.length + ')</span><span class="accordion-icon">' + (checkedCount > 0 && checkedCount < cl.items.length ? '-' : '+') + '</span></button>' +
+        '<div class="accordion-body">';
+
+      cl.items.forEach(function(item, i) {
+        var isChecked = checked[i] ? true : false;
+        html += '<div class="checklist-item' + (isChecked ? ' checked' : '') + '">' +
+          '<input type="checkbox" id="cl-' + key + '-' + i + '" data-cl="' + key + '" data-idx="' + i + '"' + (isChecked ? ' checked' : '') + '>' +
+          '<label for="cl-' + key + '-' + i + '">' + item + '</label></div>';
+      });
+
+      html += '</div></div></section>';
+    });
+
+    checklistsContainer.innerHTML = html;
+
+    // Bind accordion
+    checklistsContainer.querySelectorAll('.accordion-header').forEach(function(header) {
+      header.addEventListener('click', function() {
+        var acc = header.closest('.accordion');
+        acc.classList.toggle('open');
+        var icon = header.querySelector('.accordion-icon');
+        icon.textContent = acc.classList.contains('open') ? '-' : '+';
+        vibrate(5);
+      });
+    });
+
+    // Bind checkboxes
+    checklistsContainer.querySelectorAll('input[type="checkbox"]').forEach(function(cb) {
+      cb.addEventListener('change', function() {
+        var session = getSession(currentSessionId);
+        if (!session) return;
+        if (!session.checks) session.checks = {};
+        if (!session.checks[cb.dataset.cl]) session.checks[cb.dataset.cl] = {};
+        session.checks[cb.dataset.cl][cb.dataset.idx] = cb.checked;
+        updateSession(currentSessionId, { checks: session.checks });
+
+        var item = cb.closest('.checklist-item');
+        if (cb.checked) item.classList.add('checked');
+        else item.classList.remove('checked');
+
+        updateProgress(session);
+        updateChecklistCount(cb.dataset.cl);
+        vibrate(cb.checked ? 10 : 5);
+      });
+    });
+  }
+
+  function updateChecklistCount(key) {
+    var session = getSession(currentSessionId);
+    if (!session) return;
+    var cl = DATA.checklists[key];
+    var checked = (session.checks && session.checks[key]) || {};
+    var count = 0;
+    cl.items.forEach(function(_, i) { if (checked[i]) count++; });
+
+    var acc = checklistsContainer.querySelector('[data-accordion="cl-' + key + '"]');
+    if (acc) {
+      var header = acc.querySelector('.accordion-header span:first-child');
+      header.textContent = cl.titre + ' (' + count + '/' + cl.items.length + ')';
+    }
+  }
+
+  function updateProgress(session) {
+    var total = countChecked(session);
+    var pct = Math.round(total / 39 * 100);
+    var bar = document.querySelector('#sessionProgress .progress-fill');
+    var text = document.getElementById('sessionProgressText');
+    if (bar) bar.style.width = pct + '%';
+    if (text) text.textContent = total + ' / 39';
+  }
+
+  // --- Fiche de suivi ---
+  function renderFiche(session) {
+    var fiche = session.fiche || {};
+
+    // Populate fields
+    document.querySelectorAll('[data-field]').forEach(function(el) {
+      var key = el.dataset.field;
+      if (fiche[key] !== undefined) {
+        el.value = fiche[key];
+      } else {
+        // Pre-populate from session info
+        if (key === 'ficheDate') el.value = session.date || '';
+        else if (key === 'ficheWineVol') el.value = session.wineVol || '';
+        else if (key === 'ficheWineABV') el.value = session.wineABV || '';
+        else if (key === 'ficheWineType') el.value = session.wineType || '';
+        else el.value = '';
+      }
+    });
+
+    computeFicheAutos();
+
+    // Bind auto-save
+    document.querySelectorAll('[data-field]').forEach(function(el) {
+      var events = el.tagName === 'SELECT' || el.type === 'date' || el.type === 'time' ? ['change'] : ['input'];
+      events.forEach(function(evt) {
+        el.addEventListener(evt, function() {
+          saveFicheField(el.dataset.field, el.value);
+          computeFicheAutos();
+        });
+      });
+    });
+  }
+
+  function saveFicheField(key, value) {
+    var session = getSession(currentSessionId);
+    if (!session) return;
+    if (!session.fiche) session.fiche = {};
+    session.fiche[key] = value;
+    updateSession(currentSessionId, { fiche: session.fiche });
+  }
+
+  function computeFicheAutos() {
+    // D1 ethanol
+    var d1Vol = getFieldNum('ficheD1Vol');
+    var d1ABV = getFieldNum('ficheD1ABV');
+    if (d1Vol && d1ABV) {
+      var eth1 = Math.round(d1Vol * d1ABV / 100);
+      setField('ficheD1Ethanol', eth1);
+      saveFicheField('ficheD1Ethanol', eth1);
+      showCompare('ficheD1Compare', eth1, 210, 'mL ethanol');
+    }
+
+    // D2 ethanol
+    var d2Vol = getFieldNum('ficheD2CoeurVol');
+    var d2ABV = getFieldNum('ficheD2CoeurABV');
+    if (d2Vol && d2ABV) {
+      var eth2 = Math.round(d2Vol * d2ABV / 100);
+      setField('ficheD2Ethanol', eth2);
+      saveFicheField('ficheD2Ethanol', eth2);
+      showCompare('ficheD2Compare', eth2, 128, 'mL ethanol');
+    }
+
+    // D3 ethanol
+    var d3Vol = getFieldNum('ficheD3CoeurVol');
+    var d3ABV = getFieldNum('ficheD3CoeurABV');
+    if (d3Vol && d3ABV) {
+      var eth3 = Math.round(d3Vol * d3ABV / 100);
+      setField('ficheD3Ethanol', eth3);
+      saveFicheField('ficheD3Ethanol', eth3);
+      showCompare('ficheD3Compare', eth3, 108, 'mL ethanol');
+    }
+
+    // Rendement
+    var session = getSession(currentSessionId);
+    if (!session) return;
+    var ethInit = (session.wineVol || 2000) * (session.wineABV || 12) / 100;
+    var finalABV = getFieldNum('ficheDilFinalABVAfter') || getFieldNum('ficheDilFinalABV');
+    var finalVol = getFieldNum('ficheDilGinVol') || getFieldNum('ficheDilFinalVol');
+    if (finalVol && finalABV && ethInit > 0) {
+      var ethFinal = finalVol * finalABV / 100;
+      var rendement = Math.round(ethFinal / ethInit * 100);
+      setField('ficheRendement', rendement);
+      saveFicheField('ficheRendement', rendement);
+      updateSession(currentSessionId, { ficheRendement: rendement });
+    }
+  }
+
+  function getFieldNum(key) {
+    var el = document.querySelector('[data-field="' + key + '"]');
+    return el ? parseFloat(el.value) || 0 : 0;
+  }
+
+  function setField(key, value) {
+    var el = document.querySelector('[data-field="' + key + '"]');
+    if (el) el.value = value;
+  }
+
+  function showCompare(id, actual, expected, unit) {
+    var el = document.getElementById(id);
+    if (!el || !actual) { if (el) el.innerHTML = ''; return; }
+    var diff = ((actual - expected) / expected * 100).toFixed(0);
+    var cls = Math.abs(diff) <= 15 ? 'compare-ok' : Math.abs(diff) <= 30 ? 'compare-warn' : 'compare-bad';
+    var sign = diff > 0 ? '+' : '';
+    el.innerHTML = '<span class="compare-tag ' + cls + '">Attendu: ~' + expected + ' ' + unit + ' (' + sign + diff + '%)</span>';
+  }
+
+  // Initialize suivi view
+  showView('list');
+  renderSessionList();
+
+  // ========== PWA ==========
+  // Service Worker
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+      navigator.serviceWorker.register('sw.js').catch(function() {});
+    });
+  }
+
+  // Install prompt
+  var deferredPrompt = null;
+  var installBanner = document.getElementById('installBanner');
+  var installBtn = document.getElementById('installBtn');
+  var installDismiss = document.getElementById('installDismiss');
+
+  window.addEventListener('beforeinstallprompt', function(e) {
+    e.preventDefault();
+    deferredPrompt = e;
+    if (!localStorage.getItem('gin-install-dismissed')) {
+      installBanner.classList.remove('hidden');
+    }
+  });
+
+  if (installBtn) {
+    installBtn.addEventListener('click', function() {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then(function() {
+          deferredPrompt = null;
+          installBanner.classList.add('hidden');
+        });
+      }
+    });
+  }
+
+  if (installDismiss) {
+    installDismiss.addEventListener('click', function() {
+      installBanner.classList.add('hidden');
+      localStorage.setItem('gin-install-dismissed', '1');
+    });
+  }
+
+  // ========== UTILITIES ==========
+  function vibrate(ms) {
+    if (navigator.vibrate) navigator.vibrate(ms);
+  }
+
+  function escapeHtml(str) {
+    var div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function formatDate(dateStr) {
+    if (!dateStr) return '--';
+    var parts = dateStr.split('-');
+    if (parts.length === 3) return parts[2] + '/' + parts[1] + '/' + parts[0];
+    return dateStr;
+  }
+
+})();

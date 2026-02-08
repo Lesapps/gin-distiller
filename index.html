@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#2c5f8a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Gin Distiller">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="styles.css">
+  <title>Gin Distiller Pro</title>
+</head>
+<body>
+
+<!-- ========== HEADER ========== -->
+<header class="app-header">
+  <h1 class="app-title">Gin Distiller Pro</h1>
+  <button id="themeToggle" class="btn-icon" aria-label="Changer le theme">
+    <span class="icon-sun">&#9728;</span>
+    <span class="icon-moon">&#9790;</span>
+  </button>
+</header>
+
+<!-- ========== MODAL AVERTISSEMENT ========== -->
+<div id="legalModal" class="modal" role="dialog" aria-modal="true">
+  <div class="modal-content">
+    <h2>Avertissement Legal</h2>
+    <div class="box box-danger">
+      <p><strong>La distillation d'alcool a domicile est INTERDITE dans de nombreux pays sans licence.</strong></p>
+      <p>Ce guide est fourni a titre educatif uniquement.</p>
+      <p>Risques : explosion des vapeurs, brulures thermiques, responsabilite penale.</p>
+    </div>
+    <div class="box box-info" style="margin-top:1rem">
+      <p><strong>Methanol :</strong> Le vin de raisin contient tres peu de methanol (40-120 mg/L). La distillation de vin blanc ne presente PAS de risque significatif de methanol. Le methanol se concentre dans les queues (pas les tetes). L'elimination des tetes sert a retirer l'acetone et l'acetaldehyde (qualite gustative).</p>
+    </div>
+    <button id="legalAccept" class="btn btn-primary" style="margin-top:1.5rem;width:100%">J'ai compris - Acces au guide</button>
+  </div>
+</div>
+
+<!-- ========== BANNER INSTALLATION ========== -->
+<div id="installBanner" class="install-banner hidden">
+  <span>Installer l'application</span>
+  <button id="installBtn" class="btn btn-sm">Installer</button>
+  <button id="installDismiss" class="btn-icon" aria-label="Fermer">&times;</button>
+</div>
+
+<!-- ========== PAGE: ACCUEIL ========== -->
+<main id="page-accueil" class="page active">
+  <section class="section">
+    <h2>Guide de Production de Gin</h2>
+    <p class="subtitle">Calculs verifies pour 2 litres de vin</p>
+    <p class="tag-line">Vin Blanc 12% ABV | Alambic Pot Still 3L | Triple Distillation</p>
+  </section>
+
+  <section class="section">
+    <div class="box box-danger">
+      <strong>Avertissement :</strong> La distillation d'alcool a domicile est INTERDITE dans de nombreux pays sans licence. Guide educatif uniquement.
+    </div>
+  </section>
+
+  <section class="section">
+    <h3>Principe fondamental</h3>
+    <div class="box box-info">
+      La distillation SEPARE l'ethanol de l'eau. Elle ne cree jamais d'alcool. On part de 0.240L d'ethanol pur et on ne peut en recuperer qu'une fraction (pertes a chaque etape).
+    </div>
+  </section>
+
+  <section class="section">
+    <h3>Point de depart</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Parametre</th><th>Valeur</th><th>Verification</th></tr></thead>
+        <tbody>
+          <tr><td>Volume de vin blanc</td><td>2.000 L</td><td>Mesurer a l'eprouvette</td></tr>
+          <tr><td>ABV du vin</td><td>12.0%</td><td>Verifier a l'alcoometre</td></tr>
+          <tr><td>Ethanol pur initial</td><td>0.240 L (240 mL)</td><td>2.0 x 0.12 = 0.240 L</td></tr>
+          <tr><td>Densite du vin fini 12%</td><td>~0.979 g/cm3</td><td>Ref: tables OIML R22 a 20&deg;C</td></tr>
+          <tr><td>Type de vin</td><td>Blanc sec</td><td>Eviter vins sucres</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="section">
+    <h3>Flux ethanol : Vin &rarr; Gin</h3>
+    <div class="ethanol-flow">
+      <div class="flow-step">
+        <div class="flow-label">Vin</div>
+        <div class="flow-value">2000 mL @ 12%</div>
+        <div class="flow-ethanol">240 mL ethanol</div>
+      </div>
+      <div class="flow-arrow">&darr; D1 (88%)</div>
+      <div class="flow-step">
+        <div class="flow-label">Bas-vin</div>
+        <div class="flow-value">~600 mL @ ~35%</div>
+        <div class="flow-ethanol">~210 mL ethanol</div>
+      </div>
+      <div class="flow-arrow">&darr; D2 (60%)</div>
+      <div class="flow-step">
+        <div class="flow-label">Coeur D2</div>
+        <div class="flow-value">~175 mL @ ~73%</div>
+        <div class="flow-ethanol">~128 mL ethanol</div>
+      </div>
+      <div class="flow-arrow">&darr; D3 (84%)</div>
+      <div class="flow-step">
+        <div class="flow-label">Coeur D3</div>
+        <div class="flow-value">~135 mL @ ~80%</div>
+        <div class="flow-ethanol">~108 mL ethanol</div>
+      </div>
+      <div class="flow-arrow">&darr; Dilution</div>
+      <div class="flow-step flow-step-final">
+        <div class="flow-label">Gin Final</div>
+        <div class="flow-value">~270 mL @ 40%</div>
+        <div class="flow-ethanol">~108 mL ethanol (45%)</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h3>Resultat final</h3>
+    <div class="box box-success">
+      <strong>~250-350 mL de gin a 40% ABV</strong> (estimation centrale : ~270 mL)<br>
+      Soit ~1 petite bouteille (ou ~10 verres de 25 mL)<br>
+      Rendement en volume : 13.5% | Rendement en ethanol : 45%
+    </div>
+  </section>
+
+  <section class="section">
+    <h3>Acces rapide</h3>
+    <div class="quick-links">
+      <button class="quick-link" data-nav="guide" data-tab="0">D1 Stripping</button>
+      <button class="quick-link" data-nav="guide" data-tab="1">D2 Spirit Run</button>
+      <button class="quick-link" data-nav="guide" data-tab="2">D3 Affinage</button>
+      <button class="quick-link" data-nav="guide" data-tab="3">Dilution</button>
+      <button class="quick-link" data-nav="calculs" data-tab="0">Calculateurs</button>
+      <button class="quick-link" data-nav="suivi">Suivi production</button>
+    </div>
+  </section>
+</main>
+
+<!-- ========== PAGE: GUIDE ========== -->
+<main id="page-guide" class="page">
+  <div class="tabs-header" id="guideTabs">
+    <button class="tab active" data-tab="0">D1</button>
+    <button class="tab" data-tab="1">D2</button>
+    <button class="tab" data-tab="2">D3</button>
+    <button class="tab" data-tab="3">Dilution</button>
+  </div>
+
+  <div class="swipe-container" id="guideSwipe">
+    <!-- ONGLET D1 -->
+    <div class="swipe-panel active" data-panel="0">
+      <section class="section">
+        <h2>D1 : Stripping Run</h2>
+        <p class="objective">Concentrer rapidement l'ethanol du vin en un "bas-vin" (low wines). Pas de coupes tetes/coeur/queues. Eliminer seulement les foreshots. Chauffer vite.</p>
+      </section>
+
+      <section class="section">
+        <h3>Parametres</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Parametre</th><th>Valeur</th><th>Justification</th></tr></thead>
+            <tbody>
+              <tr><td>Charge</td><td>2.0 L de vin a 12%</td><td>67% de l'alambic 3L (norme 50-75%)</td></tr>
+              <tr><td>Foreshots a eliminer</td><td>10-15 mL</td><td>~5 mL/L de charge (acetone, acetaldehyde)</td></tr>
+              <tr><td>Coupes tetes/queues</td><td>NON</td><td>Tout le reste est collecte</td></tr>
+              <tr><td>Arret de collecte</td><td>Sortie &lt; 10% ABV ou T vapeur &gt; 96&deg;C</td><td>Au-dela, trop peu d'ethanol</td></tr>
+              <tr><td>Vitesse</td><td>Rapide (max condenseur)</td><td>Stripping = efficacite, pas precision</td></tr>
+              <tr><td>Duree estimee</td><td>2-3 heures</td><td>--</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section">
+        <h3>Profil de temperatures (VAPEUR au col)</h3>
+        <div class="table-wrap">
+          <table class="table-temp">
+            <thead><tr><th>Phase</th><th>T vapeur (&deg;C)</th><th>Duree</th><th>Action</th></tr></thead>
+            <tbody>
+              <tr><td>Prechauffage</td><td>20 &rarr; 65</td><td>0-15 min</td><td>Chauffage progressif, rien ne coule</td></tr>
+              <tr class="row-danger"><td>Foreshots</td><td>65-78</td><td>15-20 min</td><td><strong>ELIMINER</strong> premiers 10-15 mL</td></tr>
+              <tr class="row-success"><td>Distillation active</td><td>78-90</td><td>20 min - 2h</td><td><strong>COLLECTER</strong> tout, debit rapide</td></tr>
+              <tr><td>Fin de distillation</td><td>90-96</td><td>2h-3h</td><td>Debit ralentit, continuer</td></tr>
+              <tr><td>Arret</td><td>&gt; 96</td><td>3h+</td><td>Arreter, quasiment plus d'ethanol</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note">T pot/chaudiere = T vapeur + 10-15&deg;C. Un pot a 95&deg;C peut donner une vapeur a 82&deg;C.</p>
+      </section>
+
+      <section class="section">
+        <h3>Bilan D1</h3>
+        <div class="box box-success">
+          <p><strong>Entree :</strong> 2 000 mL de vin a 12% = 240 mL ethanol pur</p>
+          <p><strong>Foreshots elimines :</strong> 10-15 mL (traces d'ethanol perdues)</p>
+          <p><strong>Residus dans le pot :</strong> ~5-10% de l'ethanol (~15-24 mL)</p>
+          <p><strong>Evaporation/adherence :</strong> ~2-3%</p>
+          <p><strong>Sortie :</strong> ~600 mL de bas-vin a ~35% ABV = ~210 mL ethanol pur</p>
+          <p><strong>Recuperation : 210/240 = ~88%</strong></p>
+          <p class="note">"Regle du tiers" : volume bas-vin ~ 1/3 du volume de charge. 2000/3 = 667 mL. Coherent avec ~600 mL.</p>
+        </div>
+      </section>
+
+      <section class="section">
+        <h3>Stockage du bas-vin</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Parametre</th><th>Detail</th></tr></thead>
+            <tbody>
+              <tr><td>Recipient</td><td>Bouteille en verre propre</td></tr>
+              <tr><td>Etiquette</td><td>"BAS-VIN D1 - ~600 mL - ~35% ABV - [date]"</td></tr>
+              <tr><td>Temperature</td><td>15-20&deg;C, stable</td></tr>
+              <tr><td>Duree max avant D2</td><td>1-3 jours</td></tr>
+              <tr><td>Volume exact</td><td>NOTER precisement (ex: 612 mL)</td></tr>
+              <tr><td>ABV mesure</td><td>NOTER (ex: 34%)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <!-- ONGLET D2 -->
+    <div class="swipe-panel" data-panel="1">
+      <section class="section">
+        <h2>D2 : Spirit Run + Botaniques</h2>
+        <p class="objective">Redistiller le bas-vin avec les botaniques pour creer le profil aromatique du gin, et separer soigneusement les fractions. Chauffer LENTEMENT.</p>
+      </section>
+
+      <section class="section">
+        <h3>Parametres</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Parametre</th><th>Valeur</th></tr></thead>
+            <tbody>
+              <tr><td>Charge</td><td>~600 mL de bas-vin D1 a ~35% ABV (totalite)</td></tr>
+              <tr><td>Remplissage alambic</td><td>20% du 3L (faible - acceptable)</td></tr>
+              <tr><td>Coupes</td><td>OUI - foreshots / tetes / coeur / queues</td></tr>
+              <tr><td>Vitesse</td><td>LENTE (1-2 gouttes/sec)</td></tr>
+              <tr><td>Duree</td><td>2-4 heures</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section">
+        <h3>Recette de Botaniques (~26 g/L)</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Botanique</th><th>g/L</th><th>Pour 0.6L</th><th>Role</th></tr></thead>
+            <tbody>
+              <tr><td>Baies de genievre (ecrasees)</td><td>15.0</td><td>9.0 g</td><td>Dominant - caractere gin</td></tr>
+              <tr><td>Graines de coriandre (craquees)</td><td>7.5</td><td>4.5 g</td><td>Agrumes, rondeur</td></tr>
+              <tr><td>Racine d'angelique (sechee)</td><td>1.5</td><td>0.9 g</td><td>Structure, fixatif</td></tr>
+              <tr><td>Zeste de citron (seche)</td><td>0.8</td><td>0.5 g</td><td>Fraicheur citronnee</td></tr>
+              <tr><td>Zeste d'orange amere (seche)</td><td>0.8</td><td>0.5 g</td><td>Amertume aromatique</td></tr>
+              <tr><td>Cardamome verte (ecrasee)</td><td>0.3</td><td>0.2 g</td><td>Epice chaude</td></tr>
+              <tr><td>Racine d'iris (sechee)</td><td>0.3</td><td>0.2 g</td><td>Fixatif aromatique</td></tr>
+              <tr class="row-total"><td><strong>TOTAL</strong></td><td><strong>~26</strong></td><td><strong>~15.8 g</strong></td><td>Equilibre London Dry classique</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note">Standard professionnel : 20-35 g/L. Genievre minimum 10 g/L. Proportions : Genievre (X), Coriandre (X/2), Angelique (X/10), Agrumes (X/20).</p>
+      </section>
+
+      <section class="section">
+        <h3>Methode d'infusion</h3>
+        <div class="box box-neutral">
+          <h4>Maceration directe (12-24h) :</h4>
+          <ol>
+            <li>Ajouter les botaniques dans le bas-vin, couvrir</li>
+            <li>Macerer 12-24 heures a temperature ambiante (20&deg;C)</li>
+            <li>Ne pas depasser 48h (amertume excessive)</li>
+            <li>Charger le tout dans l'alambic et distiller lentement</li>
+          </ol>
+        </div>
+        <div class="box box-neutral" style="margin-top:0.75rem">
+          <h4>Panier a vapeur (gin basket) si disponible :</h4>
+          <ul>
+            <li>Botaniques robustes (genievre, coriandre, angelique) : dans le pot, maceration 12-24h</li>
+            <li>Botaniques delicats (agrumes, cardamome) : dans le panier a vapeur</li>
+            <li>Les vapeurs traversent le panier pendant la distillation</li>
+            <li>Resultat plus fin et elegant (methode des gins premium)</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="section">
+        <h3>Profil de chauffage D2 (VAPEUR) - LENT</h3>
+        <div class="table-wrap">
+          <table class="table-temp">
+            <thead><tr><th>Phase</th><th>T vapeur</th><th>ABV sortie</th><th>Action</th></tr></thead>
+            <tbody>
+              <tr><td>Prechauffage</td><td>20 &rarr; 65&deg;C</td><td>--</td><td>Aucune collecte</td></tr>
+              <tr class="row-danger"><td>FORESHOTS</td><td>65-78&deg;C</td><td>&gt; 85%</td><td><strong>ELIMINER</strong> 5-10 mL</td></tr>
+              <tr class="row-warning"><td>TETES</td><td>78-80&deg;C</td><td>85-78%</td><td>Collecter a part (recyclable)</td></tr>
+              <tr class="row-success"><td>COEUR debut</td><td>~80&deg;C</td><td>~78%</td><td><strong>DEBUT COLLECTE</strong></td></tr>
+              <tr class="row-success"><td>COEUR</td><td>80-85&deg;C</td><td>78-65%</td><td>Collecter le coeur (le gin)</td></tr>
+              <tr class="row-success"><td>COEUR fin</td><td>~85&deg;C</td><td>~65%</td><td>ARRET si odeur lourde</td></tr>
+              <tr class="row-warning"><td>QUEUES</td><td>85-96&deg;C</td><td>&lt; 65%</td><td>Collecter separement</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="box box-warning" style="margin-top:0.75rem">
+          <strong>IMPORTANT :</strong> Les coupes se font PRINCIPALEMENT au nez et au gout, pas uniquement par temperature ou ABV. Changez de recipient toutes les 20-30 mL et evaluez chaque fraction.
+        </div>
+      </section>
+
+      <section class="section">
+        <h3>Identification des fractions D2</h3>
+        <div class="fraction fraction-danger">
+          <h4>FORESHOTS - A ELIMINER DEFINITIVEMENT</h4>
+          <p><strong>Volume : 5-10 mL</strong> (~5 mL/L de charge)</p>
+          <ul>
+            <li>Odeur : piquante, solvant, chimique (acetone)</li>
+            <li>JAMAIS consommer ni recycler</li>
+          </ul>
+        </div>
+        <div class="fraction fraction-warning">
+          <h4>TETES - A COLLECTER SEPAREMENT</h4>
+          <p><strong>Volume : ~15-25 mL</strong></p>
+          <ul>
+            <li>Odeur : moins agressive que foreshots, encore chimique</li>
+            <li>Recyclable : ajouter aux prochaines distillations</li>
+          </ul>
+        </div>
+        <div class="fraction fraction-success">
+          <h4>COEUR - LE GIN (A COLLECTER)</h4>
+          <p><strong>Volume attendu : ~150-200 mL a 70-75% ABV</strong></p>
+          <ul>
+            <li>Debut : odeur propre, cristalline, notes de genievre, ~78% ABV</li>
+            <li>Milieu : equilibre parfait, aromes botaniques clairs</li>
+            <li>Fin : surveiller apparition d'odeur lourde/grasse/carton mouille</li>
+            <li>Tests : frotter entre les paumes et sentir, ou diluer a 40% et gouter</li>
+            <li>Apparence : parfaitement limpide, incolore</li>
+          </ul>
+        </div>
+        <div class="fraction fraction-warning">
+          <h4>QUEUES - A COLLECTER SEPAREMENT</h4>
+          <p><strong>Volume : ~50-100 mL</strong></p>
+          <ul>
+            <li>Odeur : carton mouille, savon, graisse</li>
+            <li>Contient le plus de methanol et d'alcools de fusel</li>
+            <li>Recyclable dans une future D1 (ou a eliminer)</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="section">
+        <h3>Bilan D2</h3>
+        <div class="box box-success">
+          <p><strong>Entree :</strong> ~600 mL a ~35% = ~210 mL ethanol pur</p>
+          <p><strong>Foreshots :</strong> 5-10 mL (elimines)</p>
+          <p><strong>Tetes :</strong> ~15-25 mL a ~82% = ~15 mL ethanol (recycler)</p>
+          <p><strong>COEUR :</strong> ~175 mL a ~73% = ~128 mL ethanol pur</p>
+          <p><strong>Queues :</strong> ~80 mL a ~35% = ~28 mL ethanol</p>
+          <p><strong>Evaporation :</strong> ~39 mL ethanol (pertes ~19%)</p>
+          <p class="note">Verification : 15 + 128 + 28 + 39 = 210 mL ethanol. Bilan equilibre.</p>
+        </div>
+      </section>
+    </div>
+
+    <!-- ONGLET D3 -->
+    <div class="swipe-panel" data-panel="2">
+      <section class="section">
+        <h2>D3 : Affinage Final</h2>
+        <div class="box box-info">
+          <strong>Note :</strong> La triple distillation n'est PAS le standard du gin (normalement une seule redistillation d'un esprit neutre). Ici, partant de vin a 12% (pas d'un neutre a 96%), la D3 se justifie pour affiner la purete. Cependant, le volume sera tres faible dans un alambic 3L.
+        </div>
+      </section>
+
+      <section class="section">
+        <h3>Parametres</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Parametre</th><th>Valeur</th><th>Note</th></tr></thead>
+            <tbody>
+              <tr><td>Charge brute</td><td>~175 mL de coeur D2 a ~73%</td><td>Seulement 6% de l'alambic 3L</td></tr>
+              <tr><td>Dilution recommandee</td><td>Ajouter ~120 mL eau RO &rarr; ~43%</td><td>Monte a ~295 mL = 10% de l'alambic</td></tr>
+              <tr><td>Volume charge final</td><td>~295 mL a ~43% ABV</td><td>Faible mais acceptable si chauffe doux</td></tr>
+              <tr><td>Coupes</td><td>Identiques D2</td><td>--</td></tr>
+              <tr><td>Vitesse</td><td>TRES LENTE</td><td>Volume faible = risque de surchauffe</td></tr>
+              <tr><td>Botaniques</td><td>NON (recommande)</td><td>Aromes deja acquis en D2</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note">Calcul dilution : 175 mL x (73/43 - 1) = 175 x 0.698 = 122 mL d'eau. Total : ~297 mL a 43% ABV. Ethanol pur inchange : 128 mL.</p>
+      </section>
+
+      <section class="section">
+        <h3>Profil D3 (VAPEUR)</h3>
+        <div class="table-wrap">
+          <table class="table-temp">
+            <thead><tr><th>Phase</th><th>T vapeur</th><th>ABV sortie</th><th>Action</th></tr></thead>
+            <tbody>
+              <tr><td>Prechauffage</td><td>20 &rarr; 65&deg;C</td><td>--</td><td>Chauffer tres doucement</td></tr>
+              <tr class="row-danger"><td>Foreshots+Tetes</td><td>65-80&deg;C</td><td>&gt; 78%</td><td>Eliminer 3-5 mL</td></tr>
+              <tr class="row-success"><td>COEUR</td><td>80-85&deg;C</td><td>78-65%</td><td><strong>COLLECTER</strong> (~120-150 mL)</td></tr>
+              <tr class="row-warning"><td>Queues</td><td>85-96&deg;C</td><td>&lt; 65%</td><td>Collecter separement ou arreter</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section">
+        <h3>Bilan D3</h3>
+        <div class="box box-success">
+          <p><strong>Entree :</strong> ~297 mL a ~43% = ~128 mL ethanol pur</p>
+          <p><strong>Foreshots+Tetes elimines :</strong> ~5 mL ethanol</p>
+          <p><strong>COEUR :</strong> ~135 mL a ~80% = ~108 mL ethanol pur</p>
+          <p><strong>Queues :</strong> ~30 mL a ~30% = ~9 mL ethanol</p>
+          <p><strong>Evaporation :</strong> ~6 mL ethanol</p>
+          <p class="note">Verification : 5 + 108 + 9 + 6 = 128 mL. Bilan equilibre.</p>
+          <p><strong>Recuperation D3 : 108/128 = 84%</strong></p>
+        </div>
+      </section>
+    </div>
+
+    <!-- ONGLET DILUTION -->
+    <div class="swipe-panel" data-panel="3">
+      <section class="section">
+        <h2>Dilution a 40% ABV et Finition</h2>
+      </section>
+
+      <section class="section">
+        <h3>Formule de dilution</h3>
+        <div class="box box-neutral formula-box">
+          <strong>Volume d'eau = V_esprit &times; (ABV_initial / ABV_final - 1)</strong>
+        </div>
+        <p class="note">Approximation. Contraction de volume ~2-3%. Toujours verifier a l'alcoometre apres repos.</p>
+      </section>
+
+      <section class="section">
+        <h3>Tableau de dilution pour le coeur D3</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Coeur D3</th><th>ABV</th><th>Eau a ajouter</th><th>Vol. final ~40%</th><th>Ethanol pur</th></tr></thead>
+            <tbody>
+              <tr><td>100 mL</td><td>80%</td><td>100 mL</td><td>~200 mL</td><td>80 mL</td></tr>
+              <tr><td>120 mL</td><td>78%</td><td>114 mL</td><td>~234 mL</td><td>94 mL</td></tr>
+              <tr><td>135 mL</td><td>80%</td><td>135 mL</td><td>~270 mL</td><td>108 mL</td></tr>
+              <tr><td>150 mL</td><td>80%</td><td>150 mL</td><td>~300 mL</td><td>120 mL</td></tr>
+              <tr><td>170 mL</td><td>82%</td><td>179 mL</td><td>~349 mL</td><td>139 mL</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section">
+        <h3>Procedure de dilution</h3>
+
+        <h4>Etape 1 : Preparation</h4>
+        <ul>
+          <li>Eau : osmose inverse (RO) ideale. Eau distillee acceptable. TDS &lt; 10 ppm.</li>
+          <li>L'eau de source peut causer du trouble (calcium/magnesium).</li>
+          <li>Eau et distillat a la MEME temperature (~20&deg;C).</li>
+        </ul>
+
+        <h4>Etape 2 : Melange</h4>
+        <ol>
+          <li>Verser l'eau DANS l'esprit (jamais l'inverse) - empeche le louche</li>
+          <li>Verser en filet fin, en remuant doucement</li>
+          <li>Idealement, diluer par etapes : d'abord a 60%, repos 2 jours, puis a 40%</li>
+          <li>Mesurer l'ABV a l'alcoometre apres chaque ajout</li>
+        </ol>
+
+        <h4>Etape 3 : Repos / Mariage (CRITIQUE)</h4>
+        <div class="box box-warning">
+          <p><strong>Duree : 2 a 3 semaines minimum</strong> (standard professionnel)</p>
+          <p><strong>Minimum absolu :</strong> 7 jours</p>
+          <p><strong>Optimal :</strong> 4-6 semaines</p>
+          <p><strong>Pourquoi si long ?</strong></p>
+          <ul>
+            <li>Reorganisation des liaisons hydrogene eau-ethanol</li>
+            <li>Stabilisation des terpenes du genievre</li>
+            <li>Equilibration des esters</li>
+            <li>Integration des huiles essentielles botaniques</li>
+          </ul>
+        </div>
+
+        <h4>Etape 4 : Verification finale</h4>
+        <ul>
+          <li>Alcoometre : 40% +/- 1%. Si &gt; 42% : ajouter eau. Si &lt; 38% : ajouter coeur pur.</li>
+          <li>Limpidite : parfaitement transparent. Si trouble : filtrer ou laisser reposer.</li>
+          <li>Odeur : genievre dominant, agrumes, epices. Pas d'odeur chimique.</li>
+          <li>Gout (5 mL dilue) : equilibre, pas agressif.</li>
+        </ul>
+      </section>
+
+      <section class="section">
+        <h3>Exemple complet : lot type</h3>
+        <div class="box box-success">
+          <p><strong>Coeur D3 obtenu :</strong> 135 mL a 80% ABV</p>
+          <p><strong>Ethanol pur :</strong> 135 x 0.80 = 108 mL (parti de 240 mL, pertes 55% : normal)</p>
+          <p><strong>Eau a ajouter :</strong> 135 x (80/40 - 1) = 135 mL d'eau RO</p>
+          <p><strong>Volume final :</strong> ~270 mL (contraction ~2% =&gt; ~264 mL reel)</p>
+          <p><strong>Repos :</strong> 3 semaines en bocal verre ferme, 18&deg;C, obscurite</p>
+          <p><strong>Resultat :</strong> ~265 mL de gin a 40% ABV</p>
+        </div>
+      </section>
+
+      <section class="section">
+        <h3>Mise en bouteille</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Etape</th><th>Detail</th></tr></thead>
+            <tbody>
+              <tr><td>Bouteille</td><td>Verre (prefere teinte/ambre), 200 ou 375 mL</td></tr>
+              <tr><td>Sterilisation</td><td>Rincer a l'eau bouillante 80&deg;C, secher</td></tr>
+              <tr><td>Remplissage</td><td>Apres 2-3 semaines de repos, sans agiter</td></tr>
+              <tr><td>Fermeture</td><td>Bouchon a vis ou liege</td></tr>
+              <tr><td>Etiquette</td><td>"GIN MAISON - 40% ABV - [date]"</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section">
+        <h3>Conservation</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Parametre</th><th>Specification</th></tr></thead>
+            <tbody>
+              <tr><td>Temperature</td><td>15-20&deg;C</td></tr>
+              <tr><td>Lumiere</td><td>Obscurite ou lumiere indirecte</td></tr>
+              <tr><td>Position</td><td>Vertical</td></tr>
+              <tr><td>Duree SCELLEE</td><td>INDEFINIE</td></tr>
+              <tr><td>Duree OUVERTE</td><td>6-12 mois optimal</td></tr>
+              <tr><td>Degradation</td><td>UV + oxydation des terpenes</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note">Un gin a 40% ABV correctement scelle se conserve indefiniment. Les aromes s'attenuent lentement mais le produit reste sur.</p>
+      </section>
+    </div>
+  </div>
+</main>
+
+<!-- ========== PAGE: CALCULS ========== -->
+<main id="page-calculs" class="page">
+  <div class="tabs-header" id="calculsTabs">
+    <button class="tab active" data-tab="0">Matiere</button>
+    <button class="tab" data-tab="1">Botaniques</button>
+    <button class="tab" data-tab="2">Dilution</button>
+  </div>
+
+  <div class="subtab-container" id="calculsContainer">
+    <!-- CALC: MATIERE PREMIERE -->
+    <div class="subtab-panel active" data-panel="0">
+      <section class="section">
+        <h2>Calculateur Matiere Premiere</h2>
+        <p>Estimez le rendement a partir de votre vin.</p>
+      </section>
+
+      <section class="section">
+        <div class="form-group">
+          <label for="calcWineVol">Volume de vin (mL)</label>
+          <input type="number" id="calcWineVol" value="2000" min="100" max="10000" step="100">
+        </div>
+        <div class="form-group">
+          <label for="calcWineABV">ABV du vin (%)</label>
+          <input type="number" id="calcWineABV" value="12" min="1" max="20" step="0.5">
+        </div>
+      </section>
+
+      <section class="section">
+        <h3>Resultats : cascade de rendements</h3>
+        <div id="calcMatiereResults" class="cascade-results">
+          <!-- Filled by JS -->
+        </div>
+      </section>
+    </div>
+
+    <!-- CALC: BOTANIQUES -->
+    <div class="subtab-panel" data-panel="1">
+      <section class="section">
+        <h2>Calculateur Botaniques</h2>
+        <p>Calculez les quantites de botaniques pour votre charge.</p>
+      </section>
+
+      <section class="section">
+        <div class="form-group">
+          <label for="calcBotVol">Volume de charge D2 (mL)</label>
+          <input type="number" id="calcBotVol" value="600" min="100" max="3000" step="50">
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="table-wrap">
+          <table id="calcBotResults">
+            <thead><tr><th>Botanique</th><th>g/L</th><th>Quantite</th><th>Role</th></tr></thead>
+            <tbody>
+              <!-- Filled by JS -->
+            </tbody>
+          </table>
+        </div>
+        <p class="note">Standard professionnel : 20-35 g/L total.</p>
+      </section>
+    </div>
+
+    <!-- CALC: DILUTION -->
+    <div class="subtab-panel" data-panel="2">
+      <section class="section">
+        <h2>Calculateur Dilution</h2>
+        <p>Calculez la quantite d'eau pour atteindre votre ABV cible.</p>
+      </section>
+
+      <section class="section">
+        <div class="form-group">
+          <label for="calcDilVol">Volume d'esprit (mL)</label>
+          <input type="number" id="calcDilVol" value="135" min="1" max="5000" step="1">
+        </div>
+        <div class="form-group">
+          <label for="calcDilABV">ABV actuel (%)</label>
+          <input type="number" id="calcDilABV" value="80" min="1" max="100" step="1">
+        </div>
+        <div class="form-group">
+          <label for="calcDilTarget">ABV cible (%)</label>
+          <input type="number" id="calcDilTarget" value="40" min="1" max="99" step="1">
+        </div>
+
+        <div class="preset-btns">
+          <button class="btn btn-sm btn-outline" data-preset="d3">Coeur D3 type (135mL, 80%)</button>
+          <button class="btn btn-sm btn-outline" data-preset="preD3">Pre-D3 (175mL, 73%, cible 43%)</button>
+        </div>
+      </section>
+
+      <section class="section">
+        <div id="calcDilResults" class="dilution-results">
+          <!-- Filled by JS -->
+        </div>
+        <div class="box box-warning" style="margin-top:1rem">
+          <ul>
+            <li>Verser l'eau DANS l'esprit (pas l'inverse)</li>
+            <li>Contraction ~2-3% (molecules s'imbriquent)</li>
+            <li>Toujours verifier a l'alcoometre apres repos</li>
+          </ul>
+        </div>
+      </section>
+    </div>
+  </div>
+</main>
+
+<!-- ========== PAGE: SUIVI ========== -->
+<main id="page-suivi" class="page">
+  <!-- SESSION LIST VIEW -->
+  <div id="suiviList">
+    <section class="section">
+      <div class="section-header-row">
+        <h2>Suivi de Production</h2>
+        <button id="newSessionBtn" class="btn btn-primary btn-sm">+ Nouvelle session</button>
+      </div>
+    </section>
+
+    <section class="section" id="sessionStats" style="display:none">
+      <h3>Statistiques</h3>
+      <div id="statsContent" class="stats-grid"></div>
+    </section>
+
+    <section class="section">
+      <div id="sessionList">
+        <p class="empty-state">Aucune session. Creez votre premiere session de production.</p>
+      </div>
+    </section>
+  </div>
+
+  <!-- NEW SESSION FORM -->
+  <div id="suiviNew" style="display:none">
+    <section class="section">
+      <h2>Nouvelle Session</h2>
+      <div class="form-group">
+        <label for="sessionName">Nom du lot</label>
+        <input type="text" id="sessionName" placeholder="ex: Lot #1 - Sauvignon Blanc">
+      </div>
+      <div class="form-group">
+        <label for="sessionDate">Date</label>
+        <input type="date" id="sessionDate">
+      </div>
+      <div class="form-group">
+        <label for="sessionWineVol">Volume vin (mL)</label>
+        <input type="number" id="sessionWineVol" value="2000" min="100" max="10000">
+      </div>
+      <div class="form-group">
+        <label for="sessionWineABV">ABV vin (%)</label>
+        <input type="number" id="sessionWineABV" value="12" min="1" max="20" step="0.5">
+      </div>
+      <div class="form-group">
+        <label for="sessionWineType">Type de vin</label>
+        <input type="text" id="sessionWineType" placeholder="ex: Blanc sec" value="Blanc sec">
+      </div>
+      <div class="btn-row">
+        <button id="createSessionBtn" class="btn btn-primary">Creer la session</button>
+        <button id="cancelSessionBtn" class="btn btn-outline">Annuler</button>
+      </div>
+    </section>
+  </div>
+
+  <!-- SESSION DETAIL VIEW -->
+  <div id="suiviDetail" style="display:none">
+    <section class="section">
+      <div class="section-header-row">
+        <h2 id="sessionDetailTitle">Session</h2>
+        <button id="backToListBtn" class="btn btn-sm btn-outline">&larr; Liste</button>
+      </div>
+    </section>
+
+    <!-- PROGRESS BAR -->
+    <section class="section">
+      <div class="progress-bar-container">
+        <div class="progress-bar" id="sessionProgress">
+          <div class="progress-fill" style="width:0%"></div>
+        </div>
+        <span class="progress-text" id="sessionProgressText">0 / 39</span>
+      </div>
+    </section>
+
+    <!-- CHECKLISTS -->
+    <div id="checklistsContainer">
+      <!-- Filled by JS: 5 accordion sections with checkboxes -->
+    </div>
+
+    <!-- FICHE DE SUIVI -->
+    <section class="section">
+      <div class="accordion" data-accordion="fiche">
+        <button class="accordion-header">
+          <span>Fiche de suivi</span>
+          <span class="accordion-icon">+</span>
+        </button>
+        <div class="accordion-body">
+          <!-- GENERAL -->
+          <h4>General</h4>
+          <div class="form-group">
+            <label>Date</label>
+            <input type="date" data-field="ficheDate">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Volume vin (mL)</label>
+              <input type="number" data-field="ficheWineVol">
+            </div>
+            <div class="form-group">
+              <label>ABV vin (%)</label>
+              <input type="number" data-field="ficheWineABV" step="0.5">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Type de vin</label>
+            <input type="text" data-field="ficheWineType">
+          </div>
+
+          <!-- D1 -->
+          <h4>D1 - Stripping Run</h4>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Heure debut</label>
+              <input type="time" data-field="ficheD1Start">
+            </div>
+            <div class="form-group">
+              <label>Heure fin</label>
+              <input type="time" data-field="ficheD1End">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Foreshots elimines (mL)</label>
+            <input type="number" data-field="ficheD1Foreshots" placeholder="10-15">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Volume bas-vin (mL)</label>
+              <input type="number" data-field="ficheD1Vol" placeholder="~600">
+            </div>
+            <div class="form-group">
+              <label>ABV bas-vin (%)</label>
+              <input type="number" data-field="ficheD1ABV" placeholder="~35" step="0.5">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Ethanol pur D1 (mL) <span class="auto-calc">(auto)</span></label>
+            <input type="number" data-field="ficheD1Ethanol" readonly class="readonly">
+          </div>
+          <div id="ficheD1Compare" class="compare-box"></div>
+
+          <!-- D2 -->
+          <h4>D2 - Spirit Run + Botaniques</h4>
+          <div class="form-group">
+            <label>Botaniques peses (g total)</label>
+            <input type="number" data-field="ficheD2BotTotal" placeholder="~16" step="0.1">
+          </div>
+          <div class="form-group">
+            <label>Methode</label>
+            <select data-field="ficheD2Method">
+              <option value="">-- Choisir --</option>
+              <option value="maceration">Maceration directe</option>
+              <option value="panier">Panier a vapeur</option>
+              <option value="mixte">Mixte (pot + panier)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Foreshots elimines (mL)</label>
+            <input type="number" data-field="ficheD2Foreshots" placeholder="5-10">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Tetes (mL)</label>
+              <input type="number" data-field="ficheD2TetesVol" placeholder="15-25">
+            </div>
+            <div class="form-group">
+              <label>Tetes ABV (%)</label>
+              <input type="number" data-field="ficheD2TetesABV" placeholder="~82" step="0.5">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>COEUR (mL)</label>
+              <input type="number" data-field="ficheD2CoeurVol" placeholder="~175">
+            </div>
+            <div class="form-group">
+              <label>COEUR ABV (%)</label>
+              <input type="number" data-field="ficheD2CoeurABV" placeholder="~73" step="0.5">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Queues (mL)</label>
+              <input type="number" data-field="ficheD2QueuesVol" placeholder="~80">
+            </div>
+            <div class="form-group">
+              <label>Queues ABV (%)</label>
+              <input type="number" data-field="ficheD2QueuesABV" placeholder="~35" step="0.5">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Ethanol pur coeur D2 (mL) <span class="auto-calc">(auto)</span></label>
+            <input type="number" data-field="ficheD2Ethanol" readonly class="readonly">
+          </div>
+          <div id="ficheD2Compare" class="compare-box"></div>
+
+          <!-- D3 -->
+          <h4>D3 - Affinage</h4>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Coeur D2 charge (mL)</label>
+              <input type="number" data-field="ficheD3ChargeVol" placeholder="~175">
+            </div>
+            <div class="form-group">
+              <label>ABV (%)</label>
+              <input type="number" data-field="ficheD3ChargeABV" placeholder="~73" step="0.5">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Eau ajoutee pour diluer a ~43% (mL)</label>
+            <input type="number" data-field="ficheD3Eau" placeholder="~120">
+          </div>
+          <div class="form-group">
+            <label>Foreshots+Tetes elimines (mL)</label>
+            <input type="number" data-field="ficheD3Foreshots" placeholder="3-5">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>COEUR D3 (mL)</label>
+              <input type="number" data-field="ficheD3CoeurVol" placeholder="~135">
+            </div>
+            <div class="form-group">
+              <label>COEUR D3 ABV (%)</label>
+              <input type="number" data-field="ficheD3CoeurABV" placeholder="~80" step="0.5">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Ethanol pur coeur D3 (mL) <span class="auto-calc">(auto)</span></label>
+            <input type="number" data-field="ficheD3Ethanol" readonly class="readonly">
+          </div>
+          <div id="ficheD3Compare" class="compare-box"></div>
+
+          <!-- DILUTION -->
+          <h4>Dilution et Finition</h4>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Coeur D3 (mL)</label>
+              <input type="number" data-field="ficheDilVol" placeholder="~135">
+            </div>
+            <div class="form-group">
+              <label>ABV (%)</label>
+              <input type="number" data-field="ficheDilABV" placeholder="~80" step="0.5">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Eau RO ajoutee (mL)</label>
+            <input type="number" data-field="ficheDilEau" placeholder="~135">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Volume final (mL)</label>
+              <input type="number" data-field="ficheDilFinalVol" placeholder="~270">
+            </div>
+            <div class="form-group">
+              <label>ABV mesure (%)</label>
+              <input type="number" data-field="ficheDilFinalABV" placeholder="~40" step="0.5">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Date mise en repos</label>
+              <input type="date" data-field="ficheDilReposStart">
+            </div>
+            <div class="form-group">
+              <label>Date fin repos</label>
+              <input type="date" data-field="ficheDilReposEnd">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>ABV final apres repos (%)</label>
+              <input type="number" data-field="ficheDilFinalABVAfter" placeholder="~40" step="0.5">
+            </div>
+            <div class="form-group">
+              <label>Volume gin final (mL)</label>
+              <input type="number" data-field="ficheDilGinVol" placeholder="~270">
+            </div>
+          </div>
+
+          <!-- RESULTAT -->
+          <h4>Resultat</h4>
+          <div class="form-group">
+            <label>Rendement ethanol (%) <span class="auto-calc">(auto)</span></label>
+            <input type="number" data-field="ficheRendement" readonly class="readonly">
+          </div>
+          <div class="form-group">
+            <label>Qualite</label>
+            <select data-field="ficheQualite">
+              <option value="">-- Evaluer --</option>
+              <option value="excellent">Excellent</option>
+              <option value="bon">Bon</option>
+              <option value="acceptable">Acceptable</option>
+              <option value="faible">Faible</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Notes</label>
+            <textarea data-field="ficheNotes" rows="4" placeholder="Observations, remarques..."></textarea>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DELETE -->
+    <section class="section">
+      <button id="deleteSessionBtn" class="btn btn-danger btn-block">Supprimer cette session</button>
+    </section>
+  </div>
+</main>
+
+<!-- ========== PAGE: REFERENCE ========== -->
+<main id="page-reference" class="page">
+  <div class="tabs-header" id="refTabs">
+    <button class="tab active" data-tab="0">Tables</button>
+    <button class="tab" data-tab="1">Equipement</button>
+    <button class="tab" data-tab="2">Depannage</button>
+  </div>
+
+  <div class="subtab-container" id="refContainer">
+    <!-- TABLES -->
+    <div class="subtab-panel active" data-panel="0">
+      <section class="section">
+        <h2>Points d'ebullition des composes (purs, 1 atm)</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Compose</th><th>Eb. (&deg;C)</th><th>Fraction</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>Acetaldehyde</td><td>20.8</td><td>Foreshots</td><td>Tres volatil, odeur piquante</td></tr>
+              <tr><td>Acetone</td><td>56.0</td><td>Foreshots/Tetes</td><td>Odeur solvant</td></tr>
+              <tr><td>Methanol</td><td>64.7</td><td>Toutes (surtout queues)</td><td>Se concentre dans les queues, PAS les tetes</td></tr>
+              <tr><td>Acetate d'ethyle</td><td>77.1</td><td>Tetes</td><td>Odeur vernis a ongles</td></tr>
+              <tr><td>Ethanol</td><td>78.2</td><td>Coeur</td><td>L'alcool desire</td></tr>
+              <tr><td>Eau</td><td>100.0</td><td>Queues</td><td>--</td></tr>
+              <tr><td>Isobutanol</td><td>108.0</td><td>Queues/Fusel</td><td>Alcool de fusel</td></tr>
+              <tr><td>Alcool amylique</td><td>131.6</td><td>Queues/Fusel</td><td>Alcool de fusel</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="box box-warning" style="margin-top:0.75rem">
+          <strong>ATTENTION :</strong> En melange eau-ethanol, le methanol ne se comporte PAS selon son point d'ebullition pur. Il est miscible avec l'eau et se retrouve dans TOUTES les fractions, avec concentration maximale dans les queues.
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Densite des melanges ethanol-eau a 20&deg;C</h2>
+        <p class="note">Ref. OIML R22</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>ABV (% vol)</th><th>Densite (g/cm3)</th><th>Contexte</th></tr></thead>
+            <tbody>
+              <tr><td>0% (eau pure)</td><td>0.998</td><td>Reference</td></tr>
+              <tr><td>12%</td><td>0.979</td><td>Votre vin de depart</td></tr>
+              <tr><td>35%</td><td>0.946</td><td>Bas-vin D1 (low wines)</td></tr>
+              <tr><td>40%</td><td>0.935</td><td>Gin final (cible)</td></tr>
+              <tr><td>73%</td><td>0.862</td><td>Coeur D2</td></tr>
+              <tr><td>80%</td><td>0.843</td><td>Coeur D3</td></tr>
+              <tr><td>100%</td><td>0.789</td><td>Ethanol pur (reference)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section">
+        <h3>Tableau de synthese (conservation de la masse)</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Etape</th><th>Volume</th><th>ABV</th><th>Ethanol pur</th><th>% du depart</th></tr></thead>
+            <tbody>
+              <tr><td>Vin initial</td><td>2 000 mL</td><td>12%</td><td>240 mL</td><td>100%</td></tr>
+              <tr><td>Apres D1</td><td>~600 mL</td><td>~35%</td><td>~210 mL</td><td>88%</td></tr>
+              <tr><td>Coeur D2</td><td>~175 mL</td><td>~73%</td><td>~128 mL</td><td>53%</td></tr>
+              <tr><td>Coeur D3</td><td>~135 mL</td><td>~80%</td><td>~108 mL</td><td>45%</td></tr>
+              <tr><td>Gin final 40%</td><td>~270 mL</td><td>40%</td><td>~108 mL</td><td>45%</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section">
+        <h3>Repartition des pertes</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Source de perte</th><th>D1</th><th>D2</th><th>D3</th><th>Total</th></tr></thead>
+            <tbody>
+              <tr><td>Foreshots/Tetes</td><td>~2%</td><td>~7%</td><td>~4%</td><td>~13%</td></tr>
+              <tr><td>Queues</td><td>0%</td><td>~13%</td><td>~7%</td><td>~20%</td></tr>
+              <tr><td>Evaporation</td><td>~10%</td><td>~19%</td><td>~5%</td><td>~22%</td></tr>
+              <tr class="row-total"><td><strong>Ethanol recupere</strong></td><td>88%</td><td>61%</td><td>84%</td><td><strong>45%</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <!-- EQUIPEMENT -->
+    <div class="subtab-panel" data-panel="1">
+      <section class="section">
+        <h2>Equipement Requis</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Equipement</th><th>Specification</th><th>Usage</th></tr></thead>
+            <tbody>
+              <tr><td>Alambic pot still</td><td>3 L capacite</td><td>Remplir a 50-75% max (1.5-2.25L)</td></tr>
+              <tr><td>Thermometre VAPEUR</td><td>0-110&deg;C, +/-1&deg;C</td><td>Placer AU COL de l'alambic, pas dans le pot</td></tr>
+              <tr><td>Alcoometre</td><td>0-100% ABV</td><td>Mesurer ABV du distillat a 20&deg;C</td></tr>
+              <tr><td>Eprouvette 250 mL</td><td>Graduee</td><td>Pour recueillir et mesurer les fractions</td></tr>
+              <tr><td>Recipients</td><td>6-8 flacons 100-250 mL</td><td>Verre, etiquetes : foreshots, tetes, coeur, queues</td></tr>
+              <tr><td>Balance precision</td><td>0.1g</td><td>Peser les botaniques</td></tr>
+              <tr><td>Eau de dilution</td><td>RO ou distillee (TDS &lt; 10 ppm)</td><td>Jamais eau du robinet (trouble)</td></tr>
+              <tr><td>Condenseur</td><td>Serpentin ou plaques</td><td>Doit refroidir suffisamment (sortie &lt; 25&deg;C)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <!-- DEPANNAGE -->
+    <div class="subtab-panel" data-panel="2">
+      <section class="section">
+        <h2>Troubleshooting</h2>
+        <div class="form-group">
+          <input type="text" id="troubleSearch" placeholder="Rechercher un probleme...">
+        </div>
+      </section>
+
+      <section class="section" id="troubleList">
+        <!-- Filled by JS -->
+      </section>
+    </div>
+  </div>
+</main>
+
+<!-- ========== BOTTOM NAV ========== -->
+<nav class="bottom-nav" id="bottomNav">
+  <button class="nav-btn active" data-page="accueil">
+    <span class="nav-icon">&#127968;</span>
+    <span class="nav-label">Accueil</span>
+  </button>
+  <button class="nav-btn" data-page="guide">
+    <span class="nav-icon">&#128214;</span>
+    <span class="nav-label">Guide</span>
+  </button>
+  <button class="nav-btn" data-page="calculs">
+    <span class="nav-icon">&#128290;</span>
+    <span class="nav-label">Calculs</span>
+  </button>
+  <button class="nav-btn" data-page="suivi">
+    <span class="nav-icon">&#128203;</span>
+    <span class="nav-label">Suivi</span>
+  </button>
+  <button class="nav-btn" data-page="reference">
+    <span class="nav-icon">&#128218;</span>
+    <span class="nav-label">Ref.</span>
+  </button>
+</nav>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+{
+  "name": "Gin Distiller Pro",
+  "short_name": "Gin Distiller",
+  "description": "Guide interactif de production de gin - Calculs verifies pour 2L de vin",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "lang": "fr",
+  "background_color": "#f5f5f5",
+  "theme_color": "#2c5f8a",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Guide D1 - Stripping",
+      "url": "./index.html?page=guide",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Calculateurs",
+      "url": "./index.html?page=calculs",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Suivi Production",
+      "url": "./index.html?page=suivi",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}
