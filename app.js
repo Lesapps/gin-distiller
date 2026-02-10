@@ -1575,6 +1575,13 @@
   // Clean up old permanent dismiss flag
   localStorage.removeItem('gin-install-dismissed');
 
+  // Show manual install guide if not in standalone mode
+  var isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+  var installGuide = document.getElementById('installGuide');
+  if (installGuide && !isStandalone) {
+    installGuide.style.display = '';
+  }
+
   window.addEventListener('beforeinstallprompt', function(e) {
     e.preventDefault();
     deferredPrompt = e;
