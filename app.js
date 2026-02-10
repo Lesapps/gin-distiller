@@ -1571,10 +1571,14 @@
   var installBtn = document.getElementById('installBtn');
   var installDismiss = document.getElementById('installDismiss');
 
+  var installDismissedThisSession = false;
+  // Clean up old permanent dismiss flag
+  localStorage.removeItem('gin-install-dismissed');
+
   window.addEventListener('beforeinstallprompt', function(e) {
     e.preventDefault();
     deferredPrompt = e;
-    if (!localStorage.getItem('gin-install-dismissed')) {
+    if (!installDismissedThisSession) {
       installBanner.classList.remove('hidden');
     }
   });
@@ -1594,7 +1598,7 @@
   if (installDismiss) {
     installDismiss.addEventListener('click', function() {
       installBanner.classList.add('hidden');
-      localStorage.setItem('gin-install-dismissed', '1');
+      installDismissedThisSession = true;
     });
   }
 
