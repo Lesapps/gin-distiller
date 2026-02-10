@@ -283,6 +283,8 @@ const DATA = {
     { id: 'yuzu', nom: 'Zeste de yuzu', detail: 'seche', gPerLMin: 0.3, gPerLMax: 2.5, gPerLDefault: 0.8, categorie: 'agrume', role: 'Agrume asiatique complexe', preparation: 'Seche, en lamelles' },
     { id: 'combava', nom: 'Feuille de combava', detail: 'sechee', gPerLMin: 0.2, gPerLMax: 1.5, gPerLDefault: 0.5, categorie: 'agrume', role: 'Agrume tropical intense', preparation: 'Sechee, emiettee' },
     { id: 'bergamot', nom: 'Zeste de bergamote', detail: 'seche', gPerLMin: 0.3, gPerLMax: 2.5, gPerLDefault: 0.8, categorie: 'agrume', role: 'Floral-agrume elegant', preparation: 'Seche, en lamelles' },
+    { id: 'lime', nom: 'Zeste de citron vert', detail: 'seche', gPerLMin: 0.3, gPerLMax: 3, gPerLDefault: 0.8, categorie: 'agrume', role: 'Acidite vive tropicale', preparation: 'Seche, en lamelles' },
+    { id: 'orange-sweet', nom: 'Zeste d\'orange douce', detail: 'seche', gPerLMin: 0.3, gPerLMax: 3, gPerLDefault: 0.8, categorie: 'agrume', role: 'Douceur agrumee', preparation: 'Seche, en lamelles' },
     // Floral
     { id: 'lavender', nom: 'Lavande', detail: 'fleurs sechees', gPerLMin: 0.1, gPerLMax: 1.0, gPerLDefault: 0.3, categorie: 'floral', role: 'Floral provencal', preparation: 'Fleurs sechees entieres' },
     { id: 'rose', nom: 'Petales de rose', detail: 'seches', gPerLMin: 0.2, gPerLMax: 1.5, gPerLDefault: 0.5, categorie: 'floral', role: 'Floral delicat', preparation: 'Petales seches' },
@@ -290,6 +292,8 @@ const DATA = {
     { id: 'hibiscus', nom: 'Hibiscus', detail: 'seche', gPerLMin: 0.2, gPerLMax: 1.5, gPerLDefault: 0.5, categorie: 'floral', role: 'Floral acidule, couleur', preparation: 'Fleurs sechees' },
     { id: 'chamomile', nom: 'Camomille', detail: 'sechee', gPerLMin: 0.2, gPerLMax: 1.5, gPerLDefault: 0.5, categorie: 'floral', role: 'Douceur florale', preparation: 'Fleurs sechees' },
     { id: 'jasmine', nom: 'Jasmin', detail: 'seche', gPerLMin: 0.1, gPerLMax: 1.0, gPerLDefault: 0.3, categorie: 'floral', role: 'Floral exotique intense', preparation: 'Fleurs sechees' },
+    { id: 'heather', nom: 'Bruyere', detail: 'fleurs sechees', gPerLMin: 0.2, gPerLMax: 1.5, gPerLDefault: 0.5, categorie: 'floral', role: 'Floral sauvage mielleux', preparation: 'Fleurs sechees' },
+    { id: 'violet', nom: 'Violette', detail: 'fleurs sechees', gPerLMin: 0.1, gPerLMax: 1.0, gPerLDefault: 0.3, categorie: 'floral', role: 'Floral delicat parfume', preparation: 'Fleurs sechees' },
     // Epice
     { id: 'coriander', nom: 'Graines de coriandre', detail: 'craquees', gPerLMin: 2, gPerLMax: 12, gPerLDefault: 7.5, categorie: 'epice', role: 'Notes d\'agrumes, rondeur', preparation: 'Craquer grossierement' },
     { id: 'cardamom', nom: 'Cardamome verte', detail: 'ecrasee', gPerLMin: 0.1, gPerLMax: 1.5, gPerLDefault: 0.3, categorie: 'epice', role: 'Epice chaude aromatique', preparation: 'Ecraser les gousses' },
@@ -300,22 +304,36 @@ const DATA = {
     { id: 'clove', nom: 'Clou de girofle', detail: 'entier', gPerLMin: 0.05, gPerLMax: 0.5, gPerLDefault: 0.1, categorie: 'epice', role: 'Epice intense', preparation: 'Entier ou legerement ecrase' },
     { id: 'licorice', nom: 'Reglisse', detail: 'racine sechee', gPerLMin: 0.3, gPerLMax: 2.0, gPerLDefault: 0.8, categorie: 'epice', role: 'Douceur anisee', preparation: 'Couper en morceaux' },
     { id: 'star-anise', nom: 'Anis etoile', detail: 'entier', gPerLMin: 0.1, gPerLMax: 1.0, gPerLDefault: 0.3, categorie: 'epice', role: 'Anise puissant', preparation: 'Entier ou casse' },
+    { id: 'ginger', nom: 'Gingembre', detail: 'seche', gPerLMin: 0.2, gPerLMax: 2.0, gPerLDefault: 0.5, categorie: 'epice', role: 'Piquant chaud citrique', preparation: 'Seche en tranches ou frais rape' },
+    { id: 'fennel', nom: 'Fenouil', detail: 'graines', gPerLMin: 0.2, gPerLMax: 1.5, gPerLDefault: 0.5, categorie: 'epice', role: 'Anise doux herbace', preparation: 'Graines legerement ecrasees' },
+    { id: 'grains-of-paradise', nom: 'Maniguette', detail: 'graines', gPerLMin: 0.1, gPerLMax: 1.0, gPerLDefault: 0.3, categorie: 'epice', role: 'Poivre floral piquant', preparation: 'Ecraser legerement' },
+    { id: 'cubeb', nom: 'Cubebe', detail: 'baies', gPerLMin: 0.1, gPerLMax: 1.0, gPerLDefault: 0.3, categorie: 'epice', role: 'Poivre boise eucalyptus', preparation: 'Ecraser legerement' },
+    { id: 'caraway', nom: 'Carvi', detail: 'graines', gPerLMin: 0.2, gPerLMax: 1.5, gPerLDefault: 0.3, categorie: 'epice', role: 'Anise terreux', preparation: 'Graines entieres ou ecrasees' },
     // Herbe
     { id: 'rosemary', nom: 'Romarin', detail: 'seche', gPerLMin: 0.2, gPerLMax: 1.5, gPerLDefault: 0.5, categorie: 'herbe', role: 'Herbe mediterraneenne', preparation: 'Seche ou frais' },
     { id: 'thyme', nom: 'Thym', detail: 'seche', gPerLMin: 0.2, gPerLMax: 1.5, gPerLDefault: 0.5, categorie: 'herbe', role: 'Herbe aromatique', preparation: 'Seche, effeuille' },
     { id: 'basil', nom: 'Basilic', detail: 'seche', gPerLMin: 0.2, gPerLMax: 1.5, gPerLDefault: 0.5, categorie: 'herbe', role: 'Herbe fraiche', preparation: 'Seche ou frais' },
     { id: 'mint', nom: 'Menthe', detail: 'sechee', gPerLMin: 0.2, gPerLMax: 1.5, gPerLDefault: 0.5, categorie: 'herbe', role: 'Fraicheur mentholee', preparation: 'Sechee, effeuille' },
     { id: 'sage', nom: 'Sauge', detail: 'sechee', gPerLMin: 0.2, gPerLMax: 1.5, gPerLDefault: 0.5, categorie: 'herbe', role: 'Herbe terreuse', preparation: 'Feuilles sechees' },
+    { id: 'lemongrass', nom: 'Citronnelle', detail: 'sechee', gPerLMin: 0.2, gPerLMax: 1.5, gPerLDefault: 0.5, categorie: 'herbe', role: 'Citrique herbace tropical', preparation: 'Tiges sechees, coupees' },
+    { id: 'bay-leaf', nom: 'Laurier', detail: 'feuilles sechees', gPerLMin: 0.1, gPerLMax: 1.0, gPerLDefault: 0.3, categorie: 'herbe', role: 'Herbe aromatique puissante', preparation: 'Feuilles sechees emiettees' },
+    { id: 'dill', nom: 'Aneth', detail: 'seche', gPerLMin: 0.2, gPerLMax: 1.5, gPerLDefault: 0.5, categorie: 'herbe', role: 'Fraicheur anisee herbacee', preparation: 'Seche, effeuille' },
     // Terreux/Boise
     { id: 'angelica', nom: 'Racine d\'angelique', detail: 'sechee', gPerLMin: 0.5, gPerLMax: 3.0, gPerLDefault: 1.5, categorie: 'terreux', role: 'Structure, fixatif, notes terreuses', preparation: 'Couper en petits morceaux' },
     { id: 'orris', nom: 'Racine d\'iris', detail: 'sechee', gPerLMin: 0.1, gPerLMax: 1.0, gPerLDefault: 0.3, categorie: 'terreux', role: 'Fixatif aromatique', preparation: 'En poudre ou petits morceaux' },
     { id: 'cassia', nom: 'Ecorce de cassia', detail: 'sechee', gPerLMin: 0.2, gPerLMax: 1.5, gPerLDefault: 0.5, categorie: 'terreux', role: 'Boise chaud', preparation: 'Casser en morceaux' },
     { id: 'cedar', nom: 'Bois de cedre', detail: 'copeaux', gPerLMin: 0.1, gPerLMax: 1.0, gPerLDefault: 0.3, categorie: 'terreux', role: 'Boise aromatique', preparation: 'Petits copeaux' },
+    { id: 'angelica-seed', nom: 'Graines d\'angelique', detail: 'sechees', gPerLMin: 0.2, gPerLMax: 1.5, gPerLDefault: 0.5, categorie: 'terreux', role: 'Musque terreux fixatif', preparation: 'Legerement ecrasees' },
     // Fruit
     { id: 'goji', nom: 'Baies de goji', detail: 'sechees', gPerLMin: 0.3, gPerLMax: 2.0, gPerLDefault: 0.5, categorie: 'fruit', role: 'Douceur fruitee', preparation: 'Sechees, entieres' },
     { id: 'blackcurrant', nom: 'Cassis', detail: 'seche', gPerLMin: 0.3, gPerLMax: 2.0, gPerLDefault: 0.5, categorie: 'fruit', role: 'Fruit rouge intense', preparation: 'Seche ou deshydrate' },
     { id: 'cucumber', nom: 'Concombre', detail: 'seche', gPerLMin: 0.5, gPerLMax: 3.0, gPerLDefault: 1.0, categorie: 'fruit', role: 'Fraicheur vegetale', preparation: 'Tranche et deshydrate' },
-    { id: 'olive', nom: 'Olive', detail: 'sechee', gPerLMin: 0.3, gPerLMax: 2.0, gPerLDefault: 0.8, categorie: 'fruit', role: 'Salinite mediterraneenne', preparation: 'Olive denoyautee, sechee' }
+    { id: 'olive', nom: 'Olive', detail: 'sechee', gPerLMin: 0.3, gPerLMax: 2.0, gPerLDefault: 0.8, categorie: 'fruit', role: 'Salinite mediterraneenne', preparation: 'Olive denoyautee, sechee' },
+    { id: 'raspberry', nom: 'Framboise', detail: 'sechee', gPerLMin: 0.3, gPerLMax: 2.5, gPerLDefault: 0.8, categorie: 'fruit', role: 'Fruit rouge delicat', preparation: 'Lyophilisee ou sechee' },
+    { id: 'rhubarb', nom: 'Rhubarbe', detail: 'sechee', gPerLMin: 0.3, gPerLMax: 2.5, gPerLDefault: 0.8, categorie: 'fruit', role: 'Acidite fruitee rose', preparation: 'Sechee, en morceaux' },
+    { id: 'apple', nom: 'Pomme', detail: 'sechee', gPerLMin: 0.3, gPerLMax: 2.5, gPerLDefault: 0.8, categorie: 'fruit', role: 'Douceur fruitee', preparation: 'Deshydratee en lamelles' },
+    { id: 'fig', nom: 'Figue', detail: 'sechee', gPerLMin: 0.3, gPerLMax: 2.0, gPerLDefault: 0.5, categorie: 'fruit', role: 'Douceur confite', preparation: 'Sechee, coupee en morceaux' },
+    { id: 'cranberry', nom: 'Canneberge', detail: 'sechee', gPerLMin: 0.3, gPerLMax: 2.0, gPerLDefault: 0.5, categorie: 'fruit', role: 'Acidite rouge vive', preparation: 'Sechee ou deshydratee' }
   ],
 
   // --- CATEGORIES DE BOTANIQUES ---

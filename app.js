@@ -568,12 +568,14 @@
         var recipe = getRecipe(session.recipeId || 'london-dry');
         if (recipe) {
           var chargeVolume = session.wineVol ? Math.round(session.wineVol * DATA.calcCoefficients.d1Recovery / (35 / 100)) : 600;
+          var totalGPerL = 0;
           var botText = recipe.botanicals.map(function(b) {
             var lib = getLibraryBotanical(b.id);
+            totalGPerL += b.gPerL;
             var qty = (b.gPerL * chargeVolume / 1000).toFixed(1);
             return (lib ? lib.nom : b.id) + ' ' + qty + 'g';
           }).join(', ');
-          var totalQty = recipe.totalGPerL * chargeVolume / 1000;
+          var totalQty = totalGPerL * chargeVolume / 1000;
           items[0] = 'Botaniques peses (' + recipe.nom + ') : ' + botText + ', total ~' + totalQty.toFixed(0) + 'g';
         }
       }
@@ -669,9 +671,38 @@
         else if (key === 'ficheWineABV') el.value = session.wineABV || '';
         else if (key === 'ficheWineType') el.value = session.wineType || '';
         else if (key === 'ficheD2Recipe') el.value = session.recipeName || 'London Dry Classique';
+        else if (key === 'ficheD2BotTotal') {
+          // Pre-fill with expected total from recipe
+          var recipe = getRecipe(session.recipeId || 'london-dry');
+          if (recipe) {
+            var chargeVol = session.wineVol ? Math.round(session.wineVol * DATA.calcCoefficients.d1Recovery / (35 / 100)) : 600;
+            var totalGPerL = 0;
+            recipe.botanicals.forEach(function(b) { totalGPerL += b.gPerL; });
+            el.value = (totalGPerL * chargeVol / 1000).toFixed(1);
+            el.placeholder = '~' + (totalGPerL * chargeVol / 1000).toFixed(0);
+          }
+        }
         else el.value = '';
       }
     });
+
+    // Render botanical detail under recipe name
+    var botDetailEl = document.getElementById('ficheD2BotDetail');
+    if (botDetailEl) {
+      var recipe = getRecipe(session.recipeId || 'london-dry');
+      if (recipe) {
+        var chargeVol = session.wineVol ? Math.round(session.wineVol * DATA.calcCoefficients.d1Recovery / (35 / 100)) : 600;
+        var html = recipe.botanicals.map(function(b) {
+          var lib = getLibraryBotanical(b.id);
+          var nom = lib ? lib.nom : b.id;
+          var qty = (b.gPerL * chargeVol / 1000).toFixed(1);
+          return '<span class="bot-detail-item">' + nom + ' <strong>' + qty + 'g</strong></span>';
+        }).join('');
+        botDetailEl.innerHTML = html;
+      } else {
+        botDetailEl.innerHTML = '';
+      }
+    }
 
     computeFicheAutos();
 
@@ -824,6 +855,64 @@
     copy.isPreset = false;
     saveRecipe(copy);
     return copy;
+  }
+
+  function exportRecipe(id) {
+    var recipe = getRecipe(id);
+    if (!recipe) return;
+    var data = JSON.parse(JSON.stringify(recipe));
+    delete data.isPreset;
+    var json = JSON.stringify(data, null, 2);
+
+    // Try Web Share API first (mobile)
+    if (navigator.share && navigator.canShare) {
+      var file = new File([json], recipe.nom.replace(/[^a-zA-Z0-9]/g, '_') + '.json', { type: 'application/json' });
+      if (navigator.canShare({ files: [file] })) {
+        navigator.share({
+          title: recipe.nom,
+          text: 'Recette Gin: ' + recipe.nom,
+          files: [file]
+        }).catch(function() {});
+        return;
+      }
+    }
+
+    // Fallback: download file
+    var blob = new Blob([json], { type: 'application/json' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = recipe.nom.replace(/[^a-zA-Z0-9]/g, '_') + '.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  function importRecipeFromFile(file) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      try {
+        var data = JSON.parse(e.target.result);
+        if (!data.nom || !data.botanicals || !Array.isArray(data.botanicals)) {
+          alert('Fichier invalide : recette non reconnue.');
+          return;
+        }
+        data.id = 'custom-' + Date.now();
+        data.isPreset = false;
+        // Recalculate totalGPerL and profil
+        var totalG = 0;
+        data.botanicals.forEach(function(b) { totalG += b.gPerL; });
+        data.totalGPerL = Math.round(totalG * 10) / 10;
+        data.profil = computeFlavorProfile(data.botanicals);
+        saveRecipe(data);
+        renderRecipeDetail(data.id);
+        vibrate(15);
+      } catch (err) {
+        alert('Erreur lors de l\'import : ' + err.message);
+      }
+    };
+    reader.readAsText(file);
   }
 
   function getFavorites() {
@@ -1073,7 +1162,8 @@
     renderRecipeTable(recipe, parseFloat(document.getElementById('recipeDetailVolume').value) || 600);
 
     // Actions
-    var actionsHtml = '<button class="btn btn-outline btn-sm" id="duplicateRecipeBtn">Dupliquer</button>';
+    var actionsHtml = '<button class="btn btn-outline btn-sm" id="exportRecipeBtn">Exporter</button>';
+    actionsHtml += '<button class="btn btn-outline btn-sm" id="duplicateRecipeBtn">Dupliquer</button>';
     if (!recipe.isPreset) {
       actionsHtml += '<button class="btn btn-primary btn-sm" id="editRecipeBtn">Modifier</button>';
       actionsHtml += '<button class="btn btn-danger btn-sm" id="deleteRecipeBtn">Supprimer</button>';
@@ -1081,6 +1171,11 @@
     document.getElementById('recipeDetailActions').innerHTML = actionsHtml;
 
     // Bind actions
+    var expBtn = document.getElementById('exportRecipeBtn');
+    if (expBtn) expBtn.addEventListener('click', function() {
+      exportRecipe(id);
+      vibrate(10);
+    });
     var dupBtn = document.getElementById('duplicateRecipeBtn');
     if (dupBtn) dupBtn.addEventListener('click', function() {
       var copy = duplicateRecipe(id);
@@ -1377,6 +1472,21 @@
       currentRecipeId = null;
       renderRecipeEditor(null);
       vibrate(10);
+    });
+  }
+
+  // Import recipe
+  var importRecipeBtn = document.getElementById('importRecipeBtn');
+  var importRecipeFile = document.getElementById('importRecipeFile');
+  if (importRecipeBtn && importRecipeFile) {
+    importRecipeBtn.addEventListener('click', function() {
+      importRecipeFile.click();
+    });
+    importRecipeFile.addEventListener('change', function() {
+      if (importRecipeFile.files.length > 0) {
+        importRecipeFromFile(importRecipeFile.files[0]);
+        importRecipeFile.value = '';
+      }
     });
   }
 
