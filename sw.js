@@ -3,7 +3,7 @@
 // Cache-first strategy with network fallback
 // ============================================================
 
-var CACHE_NAME = 'gin-distiller-v1';
+var CACHE_NAME = 'gin-distiller-v3';
 
 var ASSETS = [
   './',

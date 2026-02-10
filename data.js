@@ -271,54 +271,180 @@ const DATA = {
     }
   },
 
-  // --- POINTS D'EBULLITION ---
-  boilingPoints: [
-    { compose: 'Acetaldehyde',    temp: 20.8,  fraction: 'Foreshots',            notes: 'Tres volatil, odeur piquante' },
-    { compose: 'Acetone',         temp: 56.0,  fraction: 'Foreshots/Tetes',      notes: 'Odeur solvant' },
-    { compose: 'Methanol',        temp: 64.7,  fraction: 'Toutes (surtout queues)', notes: 'Se concentre dans les queues, PAS les tetes' },
-    { compose: 'Acetate d\'ethyle', temp: 77.1, fraction: 'Tetes',              notes: 'Odeur vernis a ongles' },
-    { compose: 'Ethanol',         temp: 78.2,  fraction: 'Coeur',               notes: 'L\'alcool desire' },
-    { compose: 'Eau',             temp: 100.0, fraction: 'Queues',              notes: '--' },
-    { compose: 'Isobutanol',      temp: 108.0, fraction: 'Queues/Fusel',        notes: 'Alcool de fusel' },
-    { compose: 'Alcool amylique',  temp: 131.6, fraction: 'Queues/Fusel',       notes: 'Alcool de fusel' }
+  // --- BIBLIOTHEQUE DE BOTANIQUES ---
+  botanicalsLibrary: [
+    // Conifere
+    { id: 'juniper', nom: 'Baies de genievre', detail: 'ecrasees', gPerLMin: 10, gPerLMax: 25, gPerLDefault: 15, categorie: 'conifere', role: 'Dominant - caractere gin', preparation: 'Ecraser legerement au mortier' },
+    { id: 'juniper-fresh', nom: 'Genievre frais', detail: 'ecrase', gPerLMin: 8, gPerLMax: 20, gPerLDefault: 12, categorie: 'conifere', role: 'Caractere gin plus vegetal', preparation: 'Ecraser legerement' },
+    // Agrume
+    { id: 'lemon', nom: 'Zeste de citron', detail: 'seche', gPerLMin: 0.3, gPerLMax: 3, gPerLDefault: 0.8, categorie: 'agrume', role: 'Fraicheur citronnee', preparation: 'Seche, en lamelles' },
+    { id: 'orange-bitter', nom: 'Zeste d\'orange amere', detail: 'seche', gPerLMin: 0.3, gPerLMax: 3, gPerLDefault: 0.8, categorie: 'agrume', role: 'Amertume aromatique', preparation: 'Seche, en lamelles' },
+    { id: 'grapefruit', nom: 'Zeste de pamplemousse', detail: 'seche', gPerLMin: 0.3, gPerLMax: 3, gPerLDefault: 1.0, categorie: 'agrume', role: 'Notes agrumes vives', preparation: 'Seche, en lamelles' },
+    { id: 'yuzu', nom: 'Zeste de yuzu', detail: 'seche', gPerLMin: 0.3, gPerLMax: 2.5, gPerLDefault: 0.8, categorie: 'agrume', role: 'Agrume asiatique complexe', preparation: 'Seche, en lamelles' },
+    { id: 'combava', nom: 'Feuille de combava', detail: 'sechee', gPerLMin: 0.2, gPerLMax: 1.5, gPerLDefault: 0.5, categorie: 'agrume', role: 'Agrume tropical intense', preparation: 'Sechee, emiettee' },
+    { id: 'bergamot', nom: 'Zeste de bergamote', detail: 'seche', gPerLMin: 0.3, gPerLMax: 2.5, gPerLDefault: 0.8, categorie: 'agrume', role: 'Floral-agrume elegant', preparation: 'Seche, en lamelles' },
+    // Floral
+    { id: 'lavender', nom: 'Lavande', detail: 'fleurs sechees', gPerLMin: 0.1, gPerLMax: 1.0, gPerLDefault: 0.3, categorie: 'floral', role: 'Floral provencal', preparation: 'Fleurs sechees entieres' },
+    { id: 'rose', nom: 'Petales de rose', detail: 'seches', gPerLMin: 0.2, gPerLMax: 1.5, gPerLDefault: 0.5, categorie: 'floral', role: 'Floral delicat', preparation: 'Petales seches' },
+    { id: 'elderflower', nom: 'Fleur de sureau', detail: 'sechee', gPerLMin: 0.2, gPerLMax: 1.5, gPerLDefault: 0.5, categorie: 'floral', role: 'Floral mielleux', preparation: 'Fleurs sechees' },
+    { id: 'hibiscus', nom: 'Hibiscus', detail: 'seche', gPerLMin: 0.2, gPerLMax: 1.5, gPerLDefault: 0.5, categorie: 'floral', role: 'Floral acidule, couleur', preparation: 'Fleurs sechees' },
+    { id: 'chamomile', nom: 'Camomille', detail: 'sechee', gPerLMin: 0.2, gPerLMax: 1.5, gPerLDefault: 0.5, categorie: 'floral', role: 'Douceur florale', preparation: 'Fleurs sechees' },
+    { id: 'jasmine', nom: 'Jasmin', detail: 'seche', gPerLMin: 0.1, gPerLMax: 1.0, gPerLDefault: 0.3, categorie: 'floral', role: 'Floral exotique intense', preparation: 'Fleurs sechees' },
+    // Epice
+    { id: 'coriander', nom: 'Graines de coriandre', detail: 'craquees', gPerLMin: 2, gPerLMax: 12, gPerLDefault: 7.5, categorie: 'epice', role: 'Notes d\'agrumes, rondeur', preparation: 'Craquer grossierement' },
+    { id: 'cardamom', nom: 'Cardamome verte', detail: 'ecrasee', gPerLMin: 0.1, gPerLMax: 1.5, gPerLDefault: 0.3, categorie: 'epice', role: 'Epice chaude aromatique', preparation: 'Ecraser les gousses' },
+    { id: 'black-pepper', nom: 'Poivre noir', detail: 'concasse', gPerLMin: 0.2, gPerLMax: 2.0, gPerLDefault: 0.5, categorie: 'epice', role: 'Piquant chaud', preparation: 'Concasser au mortier' },
+    { id: 'sichuan-pepper', nom: 'Poivre de Sichuan', detail: 'concasse', gPerLMin: 0.2, gPerLMax: 1.5, gPerLDefault: 0.5, categorie: 'epice', role: 'Piquant tingling', preparation: 'Concasser legerement' },
+    { id: 'cinnamon', nom: 'Cannelle', detail: 'en batons', gPerLMin: 0.2, gPerLMax: 1.5, gPerLDefault: 0.5, categorie: 'epice', role: 'Chaleur sucree', preparation: 'Casser en morceaux' },
+    { id: 'nutmeg', nom: 'Muscade', detail: 'rapee', gPerLMin: 0.1, gPerLMax: 0.8, gPerLDefault: 0.2, categorie: 'epice', role: 'Chaleur boisee', preparation: 'Raper finement' },
+    { id: 'clove', nom: 'Clou de girofle', detail: 'entier', gPerLMin: 0.05, gPerLMax: 0.5, gPerLDefault: 0.1, categorie: 'epice', role: 'Epice intense', preparation: 'Entier ou legerement ecrase' },
+    { id: 'licorice', nom: 'Reglisse', detail: 'racine sechee', gPerLMin: 0.3, gPerLMax: 2.0, gPerLDefault: 0.8, categorie: 'epice', role: 'Douceur anisee', preparation: 'Couper en morceaux' },
+    { id: 'star-anise', nom: 'Anis etoile', detail: 'entier', gPerLMin: 0.1, gPerLMax: 1.0, gPerLDefault: 0.3, categorie: 'epice', role: 'Anise puissant', preparation: 'Entier ou casse' },
+    // Herbe
+    { id: 'rosemary', nom: 'Romarin', detail: 'seche', gPerLMin: 0.2, gPerLMax: 1.5, gPerLDefault: 0.5, categorie: 'herbe', role: 'Herbe mediterraneenne', preparation: 'Seche ou frais' },
+    { id: 'thyme', nom: 'Thym', detail: 'seche', gPerLMin: 0.2, gPerLMax: 1.5, gPerLDefault: 0.5, categorie: 'herbe', role: 'Herbe aromatique', preparation: 'Seche, effeuille' },
+    { id: 'basil', nom: 'Basilic', detail: 'seche', gPerLMin: 0.2, gPerLMax: 1.5, gPerLDefault: 0.5, categorie: 'herbe', role: 'Herbe fraiche', preparation: 'Seche ou frais' },
+    { id: 'mint', nom: 'Menthe', detail: 'sechee', gPerLMin: 0.2, gPerLMax: 1.5, gPerLDefault: 0.5, categorie: 'herbe', role: 'Fraicheur mentholee', preparation: 'Sechee, effeuille' },
+    { id: 'sage', nom: 'Sauge', detail: 'sechee', gPerLMin: 0.2, gPerLMax: 1.5, gPerLDefault: 0.5, categorie: 'herbe', role: 'Herbe terreuse', preparation: 'Feuilles sechees' },
+    // Terreux/Boise
+    { id: 'angelica', nom: 'Racine d\'angelique', detail: 'sechee', gPerLMin: 0.5, gPerLMax: 3.0, gPerLDefault: 1.5, categorie: 'terreux', role: 'Structure, fixatif, notes terreuses', preparation: 'Couper en petits morceaux' },
+    { id: 'orris', nom: 'Racine d\'iris', detail: 'sechee', gPerLMin: 0.1, gPerLMax: 1.0, gPerLDefault: 0.3, categorie: 'terreux', role: 'Fixatif aromatique', preparation: 'En poudre ou petits morceaux' },
+    { id: 'cassia', nom: 'Ecorce de cassia', detail: 'sechee', gPerLMin: 0.2, gPerLMax: 1.5, gPerLDefault: 0.5, categorie: 'terreux', role: 'Boise chaud', preparation: 'Casser en morceaux' },
+    { id: 'cedar', nom: 'Bois de cedre', detail: 'copeaux', gPerLMin: 0.1, gPerLMax: 1.0, gPerLDefault: 0.3, categorie: 'terreux', role: 'Boise aromatique', preparation: 'Petits copeaux' },
+    // Fruit
+    { id: 'goji', nom: 'Baies de goji', detail: 'sechees', gPerLMin: 0.3, gPerLMax: 2.0, gPerLDefault: 0.5, categorie: 'fruit', role: 'Douceur fruitee', preparation: 'Sechees, entieres' },
+    { id: 'blackcurrant', nom: 'Cassis', detail: 'seche', gPerLMin: 0.3, gPerLMax: 2.0, gPerLDefault: 0.5, categorie: 'fruit', role: 'Fruit rouge intense', preparation: 'Seche ou deshydrate' },
+    { id: 'cucumber', nom: 'Concombre', detail: 'seche', gPerLMin: 0.5, gPerLMax: 3.0, gPerLDefault: 1.0, categorie: 'fruit', role: 'Fraicheur vegetale', preparation: 'Tranche et deshydrate' },
+    { id: 'olive', nom: 'Olive', detail: 'sechee', gPerLMin: 0.3, gPerLMax: 2.0, gPerLDefault: 0.8, categorie: 'fruit', role: 'Salinite mediterraneenne', preparation: 'Olive denoyautee, sechee' }
   ],
-  boilingNote: 'En melange eau-ethanol, le methanol ne se comporte PAS selon son point d\'ebullition pur. Il est miscible avec l\'eau et se retrouve dans TOUTES les fractions, avec concentration maximale dans les queues.',
 
-  // --- TABLE DENSITE ---
-  densityTable: [
-    { abv: 0,   density: 0.998, context: 'Eau pure (reference)' },
-    { abv: 12,  density: 0.979, context: 'Votre vin de depart' },
-    { abv: 35,  density: 0.946, context: 'Bas-vin D1 (low wines)' },
-    { abv: 40,  density: 0.935, context: 'Gin final (cible)' },
-    { abv: 73,  density: 0.862, context: 'Coeur D2' },
-    { abv: 80,  density: 0.843, context: 'Coeur D3' },
-    { abv: 100, density: 0.789, context: 'Ethanol pur (reference)' }
-  ],
+  // --- CATEGORIES DE BOTANIQUES ---
+  botanicalCategories: {
+    conifere: { nom: 'Conifere', color: '#2d6a4f' },
+    agrume:   { nom: 'Agrume', color: '#f4a261' },
+    floral:   { nom: 'Floral', color: '#e9c1d4' },
+    epice:    { nom: 'Epice', color: '#c44536' },
+    herbe:    { nom: 'Herbe', color: '#6a994e' },
+    terreux:  { nom: 'Terreux/Boise', color: '#8b6f47' },
+    fruit:    { nom: 'Fruit', color: '#d4326d' }
+  },
 
-  // --- EQUIPEMENT ---
-  equipment: [
-    { nom: 'Alambic pot still',     spec: '3 L capacite',                  usage: 'Remplir a 50-75% max (1.5-2.25L)' },
-    { nom: 'Thermometre VAPEUR',    spec: '0-110\u00b0C, +/-1\u00b0C',    usage: 'Placer AU COL de l\'alambic, pas dans le pot' },
-    { nom: 'Alcoometre',            spec: '0-100% ABV',                    usage: 'Mesurer ABV du distillat a 20\u00b0C' },
-    { nom: 'Eprouvette 250 mL',     spec: 'Graduee',                      usage: 'Pour recueillir et mesurer les fractions' },
-    { nom: 'Recipients',            spec: '6-8 flacons 100-250 mL',       usage: 'Verre, etiquetes : foreshots, tetes, coeur, queues' },
-    { nom: 'Balance precision',     spec: '0.1g',                         usage: 'Peser les botaniques' },
-    { nom: 'Eau de dilution',       spec: 'RO ou distillee (TDS < 10 ppm)', usage: 'Jamais eau du robinet (trouble)' },
-    { nom: 'Condenseur',            spec: 'Serpentin ou plaques',          usage: 'Doit refroidir suffisamment (sortie < 25\u00b0C)' }
-  ],
-
-  // --- TROUBLESHOOTING ---
-  troubleshooting: [
-    { probleme: 'Rendement D1 < 500 mL',           cause: 'Vin < 12% ABV ou arret trop tot',             solution: 'Verifier ABV vin ; continuer jusqu\'a T > 96\u00b0C' },
-    { probleme: 'Odeur chimique dans coeur',        cause: 'Coupe tetes trop tardive',                    solution: 'Eliminer plus de tetes ; couper a ~80% ABV' },
-    { probleme: 'Gout huileux/gras',                cause: 'Coupe queues trop tardive',                   solution: 'Couper le coeur a 65-70% ABV au lieu de 60%' },
-    { probleme: 'Trouble/louche apres dilution',    cause: 'Eau dure OU dilution trop brutale',           solution: 'Utiliser eau RO ; diluer par etapes ; 20\u00b0C' },
-    { probleme: 'Manque d\'arome genievre',         cause: 'Trop peu de botaniques',                     solution: 'Augmenter genievre a 15-20 g/L minimum' },
-    { probleme: 'Gout agressif/brulant',            cause: 'Repos insuffisant',                           solution: 'Minimum 2-3 semaines ; idealement 4-6 semaines' },
-    { probleme: 'ABV final > 42%',                  cause: 'Eau insuffisante',                            solution: 'Ajouter eau RO par 10 mL, mesurer, repos 48h' },
-    { probleme: 'ABV final < 38%',                  cause: 'Trop d\'eau',                                solution: 'Ajouter coeur pur (difficile) ; accepter et noter pour prochain lot' },
-    { probleme: 'Alambic "vomit" (puking)',         cause: 'Remplissage > 75% ou chauffage trop vif',     solution: 'Reduire charge ; chauffer plus doucement' },
-    { probleme: 'Presque rien en D3',               cause: 'Volume trop faible dans grand alambic',       solution: 'Diluer D2 a 40% avant D3 ; ou alambic plus petit' }
+  // --- RECETTES PREREGISTREES ---
+  presetRecipes: [
+    {
+      id: 'london-dry',
+      nom: 'London Dry Classique',
+      style: 'London Dry',
+      description: 'Le gin classique par excellence. Equilibre et sec, domine par le genievre avec un support d\'agrumes et d\'epices. La recette de reference.',
+      botanicals: [
+        { id: 'juniper', gPerL: 15.0 },
+        { id: 'coriander', gPerL: 7.5 },
+        { id: 'angelica', gPerL: 1.5 },
+        { id: 'lemon', gPerL: 0.8 },
+        { id: 'orange-bitter', gPerL: 0.8 },
+        { id: 'cardamom', gPerL: 0.3 },
+        { id: 'orris', gPerL: 0.3 }
+      ],
+      totalGPerL: 26.2,
+      profil: { conifere: 5, agrume: 3, floral: 1, epice: 2, herbe: 0, terreux: 3, fruit: 0 },
+      notes: 'Standard professionnel. Proportions : Genievre (X), Coriandre (X/2), Angelique (X/10), Agrumes (X/20).',
+      isPreset: true
+    },
+    {
+      id: 'citrus-forward',
+      nom: 'Citrus Forward',
+      style: 'Citrus',
+      description: 'Un gin lumineux et frais, avec un accent marque sur les agrumes tout en gardant le genievre comme base.',
+      botanicals: [
+        { id: 'juniper', gPerL: 12.0 },
+        { id: 'coriander', gPerL: 5.0 },
+        { id: 'lemon', gPerL: 2.0 },
+        { id: 'grapefruit', gPerL: 2.0 },
+        { id: 'yuzu', gPerL: 1.5 },
+        { id: 'bergamot', gPerL: 1.5 },
+        { id: 'angelica', gPerL: 1.0 }
+      ],
+      totalGPerL: 25.0,
+      profil: { conifere: 4, agrume: 5, floral: 1, epice: 1, herbe: 0, terreux: 2, fruit: 0 },
+      notes: 'Ideal pour les cocktails a base d\'agrumes (Gimlet, Tom Collins). Maceration courte (12h) recommandee pour conserver la fraicheur.',
+      isPreset: true
+    },
+    {
+      id: 'floral',
+      nom: 'Floral',
+      style: 'Floral',
+      description: 'Un gin elegant et parfume, avec des notes florales delicates. Ideal pour un gin tonic printanier.',
+      botanicals: [
+        { id: 'juniper', gPerL: 12.0 },
+        { id: 'coriander', gPerL: 4.0 },
+        { id: 'lavender', gPerL: 0.5 },
+        { id: 'rose', gPerL: 0.8 },
+        { id: 'elderflower', gPerL: 0.8 },
+        { id: 'chamomile', gPerL: 0.5 },
+        { id: 'orris', gPerL: 0.4 }
+      ],
+      totalGPerL: 19.0,
+      profil: { conifere: 4, agrume: 1, floral: 5, epice: 1, herbe: 0, terreux: 2, fruit: 0 },
+      notes: 'ATTENTION : les floraux sont intenses - ne pas surdoser. Privilegier le panier a vapeur pour la lavande et la rose.',
+      isPreset: true
+    },
+    {
+      id: 'spiced',
+      nom: 'Epice',
+      style: 'Epice',
+      description: 'Un gin chaleureux et complexe avec des epices prononcees. Parfait pour la saison froide et les cocktails epices.',
+      botanicals: [
+        { id: 'juniper', gPerL: 13.0 },
+        { id: 'coriander', gPerL: 5.0 },
+        { id: 'black-pepper', gPerL: 1.0 },
+        { id: 'cinnamon', gPerL: 0.8 },
+        { id: 'licorice', gPerL: 1.0 },
+        { id: 'cardamom', gPerL: 0.5 },
+        { id: 'angelica', gPerL: 1.2 }
+      ],
+      totalGPerL: 22.5,
+      profil: { conifere: 4, agrume: 1, floral: 0, epice: 5, herbe: 0, terreux: 3, fruit: 0 },
+      notes: 'Maceration 18-24h recommandee pour extraire les epices. Excellent en Negroni ou Hot Toddy.',
+      isPreset: true
+    },
+    {
+      id: 'mediterranean',
+      nom: 'Mediterraneen',
+      style: 'Herbal',
+      description: 'Un gin frais et herbace inspire des herbes du maquis mediterraneen. Parfait avec un tonic et une branche de romarin.',
+      botanicals: [
+        { id: 'juniper', gPerL: 12.0 },
+        { id: 'rosemary', gPerL: 1.0 },
+        { id: 'thyme', gPerL: 0.8 },
+        { id: 'olive', gPerL: 1.0 },
+        { id: 'lemon', gPerL: 1.5 },
+        { id: 'basil', gPerL: 0.5 },
+        { id: 'angelica', gPerL: 1.2 }
+      ],
+      totalGPerL: 18.0,
+      profil: { conifere: 4, agrume: 2, floral: 0, epice: 0, herbe: 5, terreux: 2, fruit: 1 },
+      notes: 'Utiliser des herbes sechees de qualite. L\'olive apporte une salinite unique. Panier a vapeur recommande pour le basilic.',
+      isPreset: true
+    },
+    {
+      id: 'old-tom',
+      nom: 'Old Tom',
+      style: 'Old Tom',
+      description: 'Version legerement adoucie du gin, historiquement populaire au XIXe siecle. Plus rond et accessible que le London Dry.',
+      botanicals: [
+        { id: 'juniper', gPerL: 12.0 },
+        { id: 'coriander', gPerL: 5.0 },
+        { id: 'licorice', gPerL: 1.5 },
+        { id: 'chamomile', gPerL: 0.8 },
+        { id: 'cinnamon', gPerL: 0.5 },
+        { id: 'angelica', gPerL: 1.2 },
+        { id: 'orris', gPerL: 0.5 }
+      ],
+      totalGPerL: 21.5,
+      profil: { conifere: 4, agrume: 1, floral: 2, epice: 3, herbe: 0, terreux: 3, fruit: 0 },
+      notes: 'La reglisse et la camomille apportent une douceur naturelle. Classique pour un Tom Collins ou un Martinez.',
+      isPreset: true
+    }
   ],
 
   // --- CHECKLISTS ---

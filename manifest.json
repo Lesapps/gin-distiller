@@ -38,6 +38,11 @@
       "name": "Suivi Production",
       "url": "./index.html?page=suivi",
       "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Recettes",
+      "url": "./index.html?page=recettes",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
     }
   ]
 }
